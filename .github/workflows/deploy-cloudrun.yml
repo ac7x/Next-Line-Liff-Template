@@ -41,7 +41,10 @@ jobs:
       - name: Build Docker image
         # if: env.build == 'true' # Temporarily removed condition
         run: |
-          docker build --cache-from=ac7x/next-line-liff-template:latest -t ac7x/next-line-liff-template:latest .
+          docker build \
+            --cache-from=ac7x/next-line-liff-template:latest \
+            --build-arg NEXT_PUBLIC_LIFF_ID=${{ secrets.NEXT_PUBLIC_LIFF_ID }} \
+            -t ac7x/next-line-liff-template:latest .
           echo "Docker image built successfully."
 
       # 推送 Docker 鏡像到 Docker Hub（如果有變更）
