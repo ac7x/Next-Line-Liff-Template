@@ -52,8 +52,8 @@ jobs:
           echo "Docker image pushed successfully."
 
       # 使用 Docker Hub 上的鏡像進行部署到 Google Cloud Run
-#      - uses: 'google-github-actions/deploy-cloudrun@v2'
-#        with:
-#          image: ac7x/next-line-liff-template:latest
+      - uses: 'google-github-actions/deploy-cloudrun@v2'
+        with:
+          image: ac7x/next-line-liff-template:latest
 #          region: asia-east1
-#          service: next-line-liff-template
+          service: next-line-liff-template
