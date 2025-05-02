@@ -1,15 +1,19 @@
 'use client';
 
-import { useLiff } from '@/interfaces/liff/liff.hooks'; // Corrected import path
+import { useLiff } from '@/interfaces/liff/hooks/liff.hooks'; // 更新 import 路徑
 import { useEffect, useState } from 'react';
 
-// Get LIFF ID from environment variables
-const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
-const lineBotId = process.env.NEXT_PUBLIC_LINE_BOT_ID;
+// Define props interface
+interface LineBotIntegrationProps {
+  liffId: string;
+  lineBotId?: string; // Make lineBotId optional if it's not always required
+}
 
-export function LineBotIntegration() {
-  // Pass LIFF ID to the hook
-  const { isReady, isLoggedIn, isInClient, friendship, openWindow, error, profile } = useLiff(liffId); // Added profile
+// Accept props
+export function LineBotIntegration({ liffId, lineBotId }: LineBotIntegrationProps) {
+  // Pass LIFF ID from props to the hook
+  // useLiff 現在會從 Context 獲取 liffApplication 實例
+  const { isReady, isLoggedIn, isInClient, friendship, openWindow, error, profile, isInitializing } = useLiff(liffId);
   const [botStatus, setBotStatus] = useState<'connected' | 'disconnected' | 'checking' | 'error'>('checking');
 
   useEffect(() => {
@@ -38,7 +42,8 @@ export function LineBotIntegration() {
 
   const handleAddBot = () => {
     if (!lineBotId) {
-      console.error('LINE Bot ID is not configured.');
+      console.error('LINE Bot ID is not configured or passed as prop.');
+      alert('無法添加 Bot，因為 Bot ID 未配置。'); // User feedback
       return;
     }
     const botUrl = `https://line.me/R/ti/p/@${lineBotId}`;
@@ -71,12 +76,17 @@ export function LineBotIntegration() {
   };
   // --- 範例結束 ---
 
+  // Add a check at the top in case liffId prop is somehow empty (though page.tsx should prevent this)
+  if (!liffId) {
+     return <div className="rounded bg-red-100 p-4 text-red-700 shadow">錯誤：缺少 LIFF ID。</div>;
+  }
+
   if (botStatus === 'error') {
      return <div className="rounded bg-red-100 p-4 text-red-700 shadow">發生錯誤：{error?.message || '無法連接 LINE 服務'}</div>;
   }
 
-  if (botStatus === 'checking') {
-    return <div className="p-4">檢查 LINE Bot 連接狀態中... (Ready: {isReady.toString()}, LoggedIn: {isLoggedIn.toString()})</div>;
+  if (botStatus === 'checking' || isInitializing) { // 可以在檢查中加入 isInitializing 狀態
+    return <div className="p-4">檢查 LINE Bot 連接狀態中... (Initializing: {isInitializing.toString()}, Ready: {isReady.toString()}, LoggedIn: {isLoggedIn.toString()})</div>;
   }
 
   if (botStatus === 'disconnected') {
@@ -87,7 +97,7 @@ export function LineBotIntegration() {
         <button
           className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 disabled:opacity-50"
           onClick={handleAddBot}
-          disabled={!isReady || !lineBotId} // Disable if LIFF not ready or no bot ID
+          disabled={!isReady || !lineBotId} // Check prop lineBotId
         >
           {lineBotId ? '添加官方帳號' : 'Bot ID 未配置'}
         </button>
