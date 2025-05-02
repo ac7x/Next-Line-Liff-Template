@@ -7,7 +7,10 @@ export function getLiffConfig(): { liffId: string } {
 
   if (!liffId) {
     throw new Error(
-      'NEXT_PUBLIC_LIFF_ID 環境變數未設定。請檢查您的 .env.local 文件或環境設定，並確保包含正確的 LIFF ID。'
+      `環境變數 NEXT_PUBLIC_LIFF_ID 未設定。請檢查以下步驟：
+      1. 確保 .env.local 文件中包含 NEXT_PUBLIC_LIFF_ID=您的 LIFF ID。
+      2. 如果部署到雲端，請檢查環境變數是否正確配置。
+      3. 確保應用程式已重新啟動以載入最新的環境變數。`
     );
   }
 
