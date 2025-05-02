@@ -6,14 +6,14 @@ WORKDIR /app
 ARG NEXT_PUBLIC_LIFF_ID
 
 # 1️⃣ 先 COPY package.json + lock (確保 cache 命中率高)
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json ./ 
 RUN npm ci
 
 # 2️⃣ public 通常不常改，提早 COPY
 COPY public ./public
 
 # 3️⃣ 再 COPY 剩下 source code
-COPY . .
+COPY . . 
 ENV NEXT_TELEMETRY_DISABLED=1
 # Set environment variable from build argument before build command
 ENV NEXT_PUBLIC_LIFF_ID=$NEXT_PUBLIC_LIFF_ID
@@ -30,9 +30,9 @@ COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 
 # Note: NEXT_PUBLIC_LIFF_ID is also needed at runtime for client-side code
-# Copy it from the builder stage or set it via Cloud Run environment variables
-COPY --from=builder /app/.env.production ./
-# Or better: Configure NEXT_PUBLIC_LIFF_ID in Cloud Run service environment variables
+# Remove the COPY command for .env.production
+# COPY --from=builder /app/.env.production ./
+# Configure NEXT_PUBLIC_LIFF_ID in Cloud Run service environment variables
 
 ENV NODE_ENV=production
 ENV PORT=8080

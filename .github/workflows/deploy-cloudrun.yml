@@ -35,7 +35,6 @@ jobs:
       #     else
       #       echo "No changes detected, skipping docker build and push."
       #       echo "build=false" >> $GITHUB_ENV
-      #     fi
 
       # 構建 Docker 鏡像（如果有變更）
       - name: Build Docker image
@@ -61,3 +60,13 @@ jobs:
           image: ac7x/next-line-liff-template:latest
           region: asia-east1 # 再次確認這是您 Cloud Run 服務所在的正確區域
           project_id: ${{ secrets.GCP_PROJECT_ID }} # 明確指定 Project ID
+          # 設定 Cloud Run 服務的環境變數
+          env_vars: |
+            NEXT_PUBLIC_LIFF_ID=${{ secrets.NEXT_PUBLIC_LIFF_ID }}
+            # 在這裡加入其他必要的執行階段環境變數，例如：
+            # DATABASE_URL=${{ secrets.DATABASE_URL }}
+            # LINE_CHANNEL_ID=${{ secrets.LINE_CHANNEL_ID }}
+            # LINE_CHANNEL_SECRET=${{ secrets.LINE_CHANNEL_SECRET }}
+            # LINE_CHANNEL_ACCESS_TOKEN=${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}
+            # MEMCACHIER_SERVERS=${{ secrets.MEMCACHIER_SERVERS }} # 如果使用 Memcachier
+            # REDIS_URL=${{ secrets.REDIS_URL }} # 如果使用 Redis
