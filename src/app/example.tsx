@@ -1,6 +1,7 @@
 'use client';
 
 import { useLiff } from '@/interfaces/liff/liff.hooks';
+import { useEffect } from 'react'; // Added useEffect import
 
 export default function LiffDemo() {
   const { isReady, profile, login, getProfile } = useLiff('your-liff-id');
