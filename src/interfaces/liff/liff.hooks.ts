@@ -22,7 +22,7 @@ export function useLiff(liffId?: string) {
   const liffApplication = useLiffApplication(); // Get persistent instance
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const [profile, setProfile] = useState<LiffProfile | null>(null);
+  const [profile, setProfile] = useState<LiffProfile | null>(null); // Ensure profile state exists
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isInClient, setIsInClient] = useState<boolean>(false);
   const [friendship, setFriendship] = useState<LiffFriendship | null>(null);
@@ -260,7 +260,7 @@ export function useLiff(liffId?: string) {
   return {
     isReady,
     error,
-    profile,
+    profile, // Ensure profile is returned
     isLoggedIn,
     isInClient,
     friendship,
