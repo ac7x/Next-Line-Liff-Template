@@ -24,13 +24,28 @@ jobs:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
           project_id: '${{ secrets.GCP_PROJECT_ID }}'
 
-      # 構建 Docker 鏡像
-      - name: Build Docker image
+      # 檢查代碼變更，僅在有變更時構建和推送鏡像
+      - name: Check for changes
+        id: check_changes
         run: |
-          docker build -t ac7x/next-line-liff-template:latest .
+          git fetch
+          if [[ $(git diff HEAD..origin/main --name-only | wc -l) -gt 0 ]]; then
+            echo "Changes detected, proceeding with docker build and push."
+            echo "build=true" >> $GITHUB_ENV
+          else
+            echo "No changes detected, skipping docker build and push."
+            echo "build=false" >> $GITHUB_ENV
+          fi
 
-      # 推送 Docker 鏡像到 Docker Hub
+      # 構建 Docker 鏡像（如果有變更）
+      - name: Build Docker image
+        if: env.build == 'true'
+        run: |
+          docker build --cache-from=ac7x/next-line-liff-template:latest -t ac7x/next-line-liff-template:latest .
+
+      # 推送 Docker 鏡像到 Docker Hub（如果有變更）
       - name: Push Docker image to Docker Hub
+        if: env.build == 'true'
         run: |
           docker push ac7x/next-line-liff-template:latest
 
