@@ -24,29 +24,29 @@ jobs:
           credentials_json: '${{ secrets.GCP_SA_KEY }}'
           project_id: '${{ secrets.GCP_PROJECT_ID }}'
 
-      # 檢查代碼變更，僅在有變更時構建和推送鏡像
-      - name: Check for changes
-        id: check_changes
-        run: |
-          git fetch --all
-          if [[ $(git diff --name-only HEAD^ HEAD | wc -l) -gt 0 ]]; then
-            echo "Changes detected, proceeding with docker build and push."
-            echo "build=true" >> $GITHUB_ENV
-          else
-            echo "No changes detected, skipping docker build and push."
-            echo "build=false" >> $GITHUB_ENV
-          fi
+      # 檢查代碼變更，僅在有變更時構建和推送鏡像 - TEMPORARILY REMOVED FOR TESTING
+      # - name: Check for changes
+      #   id: check_changes
+      #   run: |
+      #     git fetch --all
+      #     if [[ $(git diff --name-only HEAD^ HEAD | wc -l) -gt 0 ]]; then
+      #       echo "Changes detected, proceeding with docker build and push."
+      #       echo "build=true" >> $GITHUB_ENV
+      #     else
+      #       echo "No changes detected, skipping docker build and push."
+      #       echo "build=false" >> $GITHUB_ENV
+      #     fi
 
       # 構建 Docker 鏡像（如果有變更）
       - name: Build Docker image
-        if: env.build == 'true'
+        # if: env.build == 'true' # Temporarily removed condition
         run: |
           docker build --cache-from=ac7x/next-line-liff-template:latest -t ac7x/next-line-liff-template:latest .
           echo "Docker image built successfully."
 
       # 推送 Docker 鏡像到 Docker Hub（如果有變更）
       - name: Push Docker image to Docker Hub
-        if: env.build == 'true'
+        # if: env.build == 'true' # Temporarily removed condition
         run: |
           docker push ac7x/next-line-liff-template:latest
           echo "Docker image pushed successfully."
@@ -54,6 +54,7 @@ jobs:
       # 使用 Docker Hub 上的鏡像進行部署到 Google Cloud Run
       - uses: 'google-github-actions/deploy-cloudrun@v2'
         with:
-          image: ac7x/next-line-liff-template:latest
-#          region: asia-east1
           service: next-line-liff-template
+          image: ac7x/next-line-liff-template:latest
+          region: asia-east1 # 再次確認這是您 Cloud Run 服務所在的正確區域
+          project_id: ${{ secrets.GCP_PROJECT_ID }} # 明確指定 Project ID
