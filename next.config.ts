@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   images: {
-    domains: ['res.cloudinary.com', 'profile.line-scdn.net'], // 添加 LINE 頭像域名
+    domains: ['res.cloudinary.com', 'profile.line-scdn.net'],
   },
 };
 
