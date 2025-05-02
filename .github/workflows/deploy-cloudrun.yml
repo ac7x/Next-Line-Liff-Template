@@ -28,8 +28,8 @@ jobs:
       - name: Check for changes
         id: check_changes
         run: |
-          git fetch
-          if [[ $(git diff HEAD..origin/main --name-only | wc -l) -gt 0 ]]; then
+          git fetch --all
+          if [[ $(git diff --name-only HEAD^ HEAD | wc -l) -gt 0 ]]; then
             echo "Changes detected, proceeding with docker build and push."
             echo "build=true" >> $GITHUB_ENV
           else
@@ -42,12 +42,14 @@ jobs:
         if: env.build == 'true'
         run: |
           docker build --cache-from=ac7x/next-line-liff-template:latest -t ac7x/next-line-liff-template:latest .
+          echo "Docker image built successfully."
 
       # 推送 Docker 鏡像到 Docker Hub（如果有變更）
       - name: Push Docker image to Docker Hub
         if: env.build == 'true'
         run: |
           docker push ac7x/next-line-liff-template:latest
+          echo "Docker image pushed successfully."
 
       # 使用 Docker Hub 上的鏡像進行部署到 Google Cloud Run
       - uses: 'google-github-actions/deploy-cloudrun@v2'

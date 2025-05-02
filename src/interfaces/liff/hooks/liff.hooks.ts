@@ -178,21 +178,22 @@ export function useLiff(liffId?: string) {
   // --- Action Callbacks ---
 
   const login = useCallback(async () => {
-    if (!liffApplication) {
-        console.error('Cannot login: LiffApplication instance is not available.');
-        setError(new Error('LIFF Application context is not available.'));
+    // Added isReady check here for extra safety, although LiffServiceImpl now also checks
+    if (!liffApplication || !isReady) {
+        const reason = !liffApplication ? 'LiffApplication instance is not available.' : 'LIFF is not ready.';
+        console.error(`Cannot login: ${reason}`);
+        setError(new Error(`Cannot login: ${reason}`));
         return;
     }
     console.log('Attempting login...');
     try {
-      // 使用從 Context 來的 liffApplication
       await liffApplication.handleLogin();
       console.log('Login initiated (expecting redirect or state change).');
     } catch (loginError) {
       console.error('LIFF login failed:', loginError);
       setError(loginError instanceof Error ? loginError : new Error('LIFF login failed'));
     }
-  }, [liffApplication]); // 只依賴 liffApplication
+  }, [liffApplication, isReady]); // Added isReady dependency
 
   const logout = useCallback(async () => {
     if (!isReady || !isLoggedIn || !liffApplication) { // 增加 liffApplication 檢查
@@ -238,20 +239,21 @@ export function useLiff(liffId?: string) {
 
 
   const openWindow = useCallback((url: string, external: boolean = true) => {
-     if (!liffApplication) { // 增加 liffApplication 檢查
-        console.error('Cannot open window: LiffApplication instance is not available.');
-        setError(new Error('LIFF Application context is not available.'));
+     // Added isReady check
+     if (!liffApplication || !isReady) {
+        const reason = !liffApplication ? 'LiffApplication instance is not available.' : 'LIFF is not ready.';
+        console.error(`Cannot open window: ${reason}`);
+        setError(new Error(`Cannot open window: ${reason}`));
         return;
      }
      console.log(`Opening window: ${url} (External: ${external})`);
      try {
-        // 使用從 Context 來的 liffApplication
         liffApplication.openExternalWindow(url, external);
      } catch(e) {
         console.error("Failed to open window:", e);
         setError(e instanceof Error ? e : new Error('Failed to open window'));
      }
-   }, [liffApplication]); // 只依賴 liffApplication
+   }, [liffApplication, isReady]); // Added isReady dependency
 
   return {
     isReady,

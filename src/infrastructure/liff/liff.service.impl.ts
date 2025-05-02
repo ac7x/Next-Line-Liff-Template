@@ -101,20 +101,11 @@ export class LiffServiceImpl implements ILiffService {
   }
 
   async login(): Promise<void> {
-    // Login might be called before init finishes, but LIFF SDK handles this.
-    // We need the instance first.
-    const liff = await this.getLiffClientInstance();
-    // We don't necessarily need to wait for ensureInitialized here,
-    // as liff.login() itself might trigger necessary setup or wait.
-    // However, calling ensureInitialized provides consistency.
-    // Let's try without ensureInitialized first for minimal code.
-    // await this.ensureInitialized(); // Optional: ensures full init before login attempt
+    // Ensure LIFF is initialized and ready before attempting login
+    const liff = await this.ensureInitialized();
     if (!liff.isLoggedIn()) {
        // liff.login() handles the redirect/popup flow.
-       // No need to await if it causes a page reload.
        liff.login();
-       // If login doesn't reload, you might need to await and handle the result.
-       // await liff.login();
     }
   }
 
@@ -167,15 +158,29 @@ export class LiffServiceImpl implements ILiffService {
 
 
   openWindow(windowConfig: LiffExternalWindow): void {
-    // openWindow is synchronous and might be called before full init.
-    const liff = this.liffClient; // Get potentially uninitialized client
-    if (!liff) {
-       // It's safer to ensure the instance exists, even if not fully ready.
-       // Throwing an error might be too strict if called early.
-       console.error('LIFF instance not available, cannot open window. Ensure initialize() was called.');
-       // Alternative: Queue the call or throw. Let's throw for now.
-       throw new Error('LIFF instance not available');
+    // Ensure LIFF is initialized and ready before opening window
+    // Note: ensureInitialized is async, but openWindow is sync.
+    // This implies openWindow should ideally be async or we risk race conditions
+    // if called immediately after initialize without awaiting readiness elsewhere.
+    // For now, let's log a warning if called before ready, but proceed.
+    // A better approach might be to make openWindow async in the interface.
+    if (!this.initPromise || !this.liffClient) {
+        console.error('LIFF instance not available, cannot open window. Ensure initialize() was called and awaited.');
+        throw new Error('LIFF instance not available');
     }
+
+    // Check readiness synchronously if possible (liff.isReady() might not exist)
+    // We rely on the caller (useLiff hook or application layer) to ensure readiness
+    // before calling this synchronous method.
+    // Let's proceed assuming readiness check happened upstream.
+
+    // const liff = await this.ensureInitialized(); // Cannot await in sync method
+    const liff = this.liffClient; // Use the existing client instance
+
+    // Add a runtime check if possible, though liff.ready is async
+    // This check is imperfect as `ready` might still be pending.
+    // console.log('Attempting to open window. Ensure LIFF is ready.');
+
     liff.openWindow(windowConfig.value);
   }
 
