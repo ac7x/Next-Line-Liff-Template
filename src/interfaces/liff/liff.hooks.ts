@@ -38,6 +38,14 @@ export function useLiff(liffId?: string) {
       return;
     }
 
+    if (!liffApplication) {
+      console.error('LiffApplication instance is not available from context.');
+      setError(new Error('LIFF Application context is not available.'));
+      setIsInitializing(false);
+      setIsReady(false);
+      return;
+    }
+
     // Prevent starting initialization if already in progress
     if (isInitializing) {
         console.log('Initialization already in progress...');
@@ -49,11 +57,12 @@ export function useLiff(liffId?: string) {
     setError(null); // Clear previous errors
     setIsReady(false); // Reset ready state
 
-    console.log(`Starting LIFF initialization with ID: ${liffId}`);
-    liffApplication.initializeLiff(liffId)
+    console.log('Starting LIFF initialization...');
+    liffApplication
+      .initializeLiff() // 修正此處，移除多餘參數
       .then(() => {
         if (!isMounted) return;
-        console.log('LIFF initialization successful (initializeLiff resolved).');
+        console.log('LIFF initialization successful.');
         setIsReady(true); // Mark as ready
         setError(null);
       })

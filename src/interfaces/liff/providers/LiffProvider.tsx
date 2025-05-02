@@ -17,12 +17,27 @@ interface LiffProviderProps {
 }
 
 export function LiffProvider({ children }: LiffProviderProps) {
-  // 使用 useMemo 確保 LiffApplication 實例在 Provider 生命週期內穩定
   const liffApplicationInstance = useMemo(() => {
-    // 這裡負責組合根 (Composition Root) 的職責：實例化基礎設施和應用層服務
-    const liffService = new LiffServiceImpl();
-    return new LiffApplication(liffService);
-  }, []); // 空依賴陣列確保只實例化一次
+    try {
+      const liffService = new LiffServiceImpl();
+      const app = new LiffApplication(liffService);
+      app.initializeLiff().catch((error: unknown) => {
+        if (error instanceof Error) {
+          console.error('LIFF 初始化失敗:', error.message);
+        } else {
+          console.error('LIFF 初始化失敗: 未知錯誤');
+        }
+      });
+      return app;
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('LIFFProvider 初始化錯誤:', error.message);
+      } else {
+        console.error('LIFFProvider 初始化錯誤: 未知錯誤');
+      }
+      return null;
+    }
+  }, []);
 
   const contextValue = useMemo(() => ({
     liffApplication: liffApplicationInstance,

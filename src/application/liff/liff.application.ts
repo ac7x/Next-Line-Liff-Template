@@ -3,12 +3,13 @@ import { LiffExternalWindow } from '@/domain/liff/valueObjects/liff-external-win
 import { LiffFriendship } from '@/domain/liff/valueObjects/liff-friendship.value';
 import { LiffInitConfig } from '@/domain/liff/valueObjects/liff-init-config.value';
 import { LiffProfile } from '@/domain/liff/valueObjects/liff-profile.value';
+import { getLiffConfig } from '@/infrastructure/liff/config/liff.config';
 
 export class LiffApplication {
   constructor(private readonly liffService: ILiffService) {}
 
-  async initializeLiff(liffId: string): Promise<void> {
-    // Consider adding withLoginOnExternalBrowser based on context
+  async initializeLiff(): Promise<void> {
+    const { liffId } = getLiffConfig(); // 確保環境變數已正確配置
     const config = new LiffInitConfig(liffId);
     await this.liffService.initialize(config);
   }

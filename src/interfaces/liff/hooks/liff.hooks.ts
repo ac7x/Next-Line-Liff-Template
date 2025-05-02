@@ -20,26 +20,17 @@ export function useLiff(liffId?: string) {
 
   // --- Initialization Effect ---
   useEffect(() => {
-    // 確保 liffApplication 實例存在
     if (!liffApplication) {
-        console.error('LiffApplication instance is not available from context.');
-        setError(new Error('LIFF Application context is not available.'));
-        setIsInitializing(false);
-        setIsReady(false);
-        return;
-    }
-
-    if (!liffId) {
-      console.warn('LIFF ID is missing.');
-      setError(new Error('LIFF ID is missing.'));
-      setIsReady(false);
+      console.error('LiffApplication instance is not available from context.');
+      setError(new Error('LIFF Application context is not available.'));
       setIsInitializing(false);
+      setIsReady(false);
       return;
     }
 
     if (isInitializing) {
-        console.log('Initialization already in progress...');
-        return;
+      console.log('Initialization already in progress...');
+      return;
     }
 
     let isMounted = true;
@@ -47,33 +38,29 @@ export function useLiff(liffId?: string) {
     setError(null);
     setIsReady(false);
 
-    console.log(`Starting LIFF initialization with ID: ${liffId}`);
-    // 使用從 Context 來的 liffApplication
-    liffApplication.initializeLiff(liffId)
+    console.log('Starting LIFF initialization...');
+    liffApplication
+      .initializeLiff() // 修正此處，移除多餘參數
       .then(() => {
         if (!isMounted) return;
-        console.log('LIFF initialization successful (initializeLiff resolved).');
+        console.log('LIFF initialization successful.');
         setIsReady(true);
-        setError(null);
       })
       .catch((initError) => {
         if (!isMounted) return;
         console.error('LIFF initialization failed:', initError);
-        setError(initError instanceof Error ? initError : new Error('LIFF initialization failed'));
-        setIsReady(false);
+        setError(initError instanceof Error ? initError : new Error('Unknown initialization error'));
       })
       .finally(() => {
-         if (!isMounted) return;
-         setIsInitializing(false);
+        if (!isMounted) return;
+        setIsInitializing(false);
       });
 
     return () => {
       isMounted = false;
       console.log('useLiff cleanup: Unmounting or liffId changed.');
     };
-  // 依賴 liffId 和從 Context 來的 liffApplication 實例
-  }, [liffId, liffApplication, isInitializing]);
-
+  }, [liffApplication, isInitializing]);
 
   // --- Status Check Effect ---
   useEffect(() => {
