@@ -43,12 +43,17 @@ jobs:
       with:
         context: .
         push: true
-        tags: gcr.io/${{ secrets.GCP_PROJECT_ID }}/next-line-app:${{ github.sha }}
+        tags: |
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/next-line-app:${{ github.sha }}
+          gcr.io/${{ secrets.GCP_PROJECT_ID }}/next-line-app:latest
         cache-from: type=gha
         cache-to: type=gha,mode=max
         build-args: |
           NEXT_PUBLIC_LIFF_ID=${{ secrets.NEXT_PUBLIC_LIFF_ID }}
           NODE_ENV=production
+        platforms: linux/amd64
+        # 啟用 Buildx 緩存
+        outputs: type=docker,dest=/tmp/myimage.tar
 
     - name: Deploy to Cloud Run
       uses: google-github-actions/deploy-cloudrun@v2
