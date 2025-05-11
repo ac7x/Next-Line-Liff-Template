@@ -1,3 +1,5 @@
+import { ILiffService } from '@/modules/liff/domain/liff.service';
+import { LiffExternalWindow } from '@/modules/liff/domain/valueObjects/liff-external-window.value';
 import { LiffFriendship } from '@/modules/liff/domain/valueObjects/liff-friendship.value';
 import { LiffInitConfig } from '@/modules/liff/domain/valueObjects/liff-init-config.value';
 import { LiffProfile } from '@/modules/liff/domain/valueObjects/liff-profile.value';
