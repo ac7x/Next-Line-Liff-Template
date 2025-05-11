@@ -26,12 +26,12 @@ export function GlobalBottomNav({ items = defaultNavItems }: GlobalBottomNavProp
 
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200">
-      <div className="grid h-full grid-cols-4 mx-auto">
+      <div className="flex h-full mx-auto justify-center">
         {navItems.map((item, index) => (
           <Link
             key={index}
             href={item.href}
-            className={`inline-flex flex-col items-center justify-center px-5 ${
+            className={`flex-1 inline-flex flex-col items-center justify-center px-5 max-w-[120px] ${
               item.active ? 'text-[#00B900]' : 'text-gray-500 hover:text-[#00B900]'
             }`}
           >

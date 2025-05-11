@@ -31,7 +31,7 @@ interface LiffContextValue {
   closeWindow: () => void;
   openExternalWindow: (url: string) => void;
   scanCode: () => Promise<string | null>;
-  persistUserData: () => Promise<{ success: boolean; userId?: string }>;
+  persistUserData: () => Promise<{ success: boolean; userId?: string; message?: string }>;
 }
 
 const defaultContextValue: LiffContextValue = {
