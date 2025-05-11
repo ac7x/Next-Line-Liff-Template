@@ -1,6 +1,6 @@
 import { IUserRepository } from '@/modules/liff/domain/repositories/user-repository.interface';
 import { LiffProfile } from '@/modules/liff/domain/valueObjects/liff-profile';
-import { ILiffSdkService } from '@/modules/liff/infrastructure/services/interfaces/ILiffSdkService';
+import { ILiffSdkService } from '@/modules/liff/infrastructure/services/interfaces/liff-sdk-service.interface';
 import { LiffInitOptions } from '@/modules/liff/interfaces/client';
 
 export class LiffApplicationService {

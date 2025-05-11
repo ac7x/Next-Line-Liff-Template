@@ -1,6 +1,6 @@
 import { User } from '@/modules/liff/domain/entities/user';
 import { IUserRepository } from '@/modules/liff/domain/repositories/user-repository.interface';
-import { UserMapper } from '@/modules/liff/infrastructure/mappers/UserMapper';
+import { UserMapper } from '@/modules/liff/infrastructure/mappers/user.mapper';
 import { prisma } from '@/modules/shared/infrastructure/persistence/prisma/client';
 
 export class PrismaUserRepository implements IUserRepository {

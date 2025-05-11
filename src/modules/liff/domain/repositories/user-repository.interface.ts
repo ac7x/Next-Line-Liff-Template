@@ -1,5 +1,9 @@
 import { User } from '../entities/user';
 
+/**
+ * 使用者存儲庫接口
+ * 定義領域層與基礎設施層交互的協議
+ */
 export interface IUserRepository {
   findByUserId(userId: string): Promise<User | null>;
   save(user: User): Promise<User>;
