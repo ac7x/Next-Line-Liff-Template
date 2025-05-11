@@ -51,17 +51,36 @@ export class LiffServiceImpl implements ILiffService {
     if (!this.initPromise) {
       throw new Error('LIFF is not initialized. Call initialize() first.');
     }
-    // Wait for the existing initialization promise to complete
-    await this.initPromise;
-    // After initPromise resolves, liffClient should be set
-    if (!this.liffClient) {
-        // This case should ideally not happen if initPromise resolved successfully
+    
+    try {
+      // Wait for the existing initialization promise to complete
+      await this.initPromise;
+      
+      // After initPromise resolves, liffClient should be set
+      if (!this.liffClient) {
         throw new Error('LIFF client instance not available after initialization.');
+      }
+
+      // 檢查 LIFF 是否有 ready 屬性 (某些版本可能沒有)
+      if (this.liffClient.ready && typeof this.liffClient.ready.then === 'function') {
+        try {
+          console.log('Waiting for LIFF.ready...');
+          await Promise.race([
+            this.liffClient.ready,
+            new Promise((_, reject) => setTimeout(() => reject(new Error('LIFF.ready timeout')), 5000))
+          ]);
+          console.log('LIFF.ready resolved.');
+        } catch (error) {
+          console.warn('LIFF.ready timed out or failed, but proceeding anyway:', error);
+          // 繼續執行，不要因為 ready 超時而中斷流程
+        }
+      }
+      
+      return this.liffClient;
+    } catch (error) {
+      console.error('Error ensuring LIFF initialization:', error);
+      throw error;
     }
-    // Although initPromise resolved, liff.ready might still be pending internally
-    // Awaiting liff.ready ensures all internal setup is complete
-    await this.liffClient.ready;
-    return this.liffClient;
   }
 
 
@@ -75,18 +94,30 @@ export class LiffServiceImpl implements ILiffService {
      // Start initialization
      this.initPromise = (async () => {
        try {
+         console.log('Loading LIFF SDK...');
          const liff = await this.getLiffClientInstance(); // Load LIFF SDK
+         
+         console.log(`Initializing LIFF with ID: ${config.value.liffId.substring(0, 8)}...`);
          await liff.init(config.value); // Initialize
-         // No need to await liff.ready here, ensureInitialized will handle it
-         console.log('LIFF initialized successfully via liff.init().');
+         
+         // 驗證初始化成功
+         if (!liff.isInClient() && !liff.isLoggedIn()) {
+           console.log('LIFF initialized in external browser, not logged in.');
+         } else if (liff.isInClient()) {
+           console.log('LIFF initialized in LINE app.');
+         } else {
+           console.log('LIFF initialized and user is logged in.');
+         }
+         
+         console.log('LIFF initialized successfully.');
        } catch (error) {
-         this.initPromise = null; // Reset promise on failure to allow retry?
+         this.initPromise = null; // Reset promise on failure to allow retry
          console.error('LIFF initialization failed:', error);
          throw error; // Re-throw error to be caught by caller
        }
      })();
 
-     await this.initPromise; // Wait for the initialization process to complete
+     return this.initPromise; // Return the promise without awaiting
    }
 
   async getProfile(): Promise<LiffProfile> {

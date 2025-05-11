@@ -34,33 +34,52 @@ export function useLiff(liffId?: string) {
     }
 
     let isMounted = true;
-    setIsInitializing(true);
-    setError(null);
-    setIsReady(false);
-
-    console.log('Starting LIFF initialization...');
-    liffApplication
-      .initializeLiff() // 修正此處，移除多餘參數
-      .then(() => {
+    let initTimeout: ReturnType<typeof setTimeout> | null = null;
+    
+    const startInitialization = async () => {
+      setIsInitializing(true);
+      setError(null);
+      setIsReady(false);
+      
+      // 設置 10 秒的超時
+      initTimeout = setTimeout(() => {
+        if (isMounted) {
+          console.error('LIFF initialization timed out after 10 seconds');
+          setError(new Error('LIFF initialization timed out. Please reload the page.'));
+          setIsInitializing(false);
+        }
+      }, 10000);
+      
+      try {
+        console.log('[useLiff] Starting LIFF initialization...');
+        await liffApplication.initializeLiff();
+        
         if (!isMounted) return;
-        console.log('LIFF initialization successful.');
+        
+        console.log('[useLiff] LIFF initialization successful.');
+        clearTimeout(initTimeout);
         setIsReady(true);
-      })
-      .catch((initError) => {
+      } catch (initError) {
         if (!isMounted) return;
-        console.error('LIFF initialization failed:', initError);
+        
+        console.error('[useLiff] LIFF initialization failed:', initError);
         setError(initError instanceof Error ? initError : new Error('Unknown initialization error'));
-      })
-      .finally(() => {
-        if (!isMounted) return;
-        setIsInitializing(false);
-      });
+      } finally {
+        if (isMounted) {
+          clearTimeout(initTimeout);
+          setIsInitializing(false);
+        }
+      }
+    };
+    
+    startInitialization();
 
     return () => {
       isMounted = false;
-      console.log('useLiff cleanup: Unmounting or liffId changed.');
+      if (initTimeout) clearTimeout(initTimeout);
+      console.log('[useLiff] cleanup: Unmounting or liffId changed.');
     };
-  }, [liffApplication, isInitializing]);
+  }, [liffApplication]);
 
   // --- Status Check Effect ---
   useEffect(() => {

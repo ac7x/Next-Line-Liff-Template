@@ -1,6 +1,6 @@
 'use client'; // Make this a Client Component
 
-import { useLiff } from '@/modules/liff/interfaces/liff.hooks'; // Import the hook
+import { useLiff } from '@/modules/liff/interfaces/hooks/liff.hooks'; // 修正 hook 引用路徑
 import Image from 'next/image'; // Import Image for profile picture
 
 // Get LIFF ID from environment variables (ensure it's available client-side)
@@ -80,7 +80,25 @@ export default function ProfilePage() {
   // Default loading state (before isReady or if profile is null unexpectedly)
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4">
-      <p className="text-lg text-gray-600">載入個人資料中...</p>
+      <p className="text-lg text-gray-600 mb-4">載入個人資料中...</p>
+      
+      {/* 診斷狀態顯示 */}
+      <div className="mt-6 p-4 bg-white rounded-lg shadow w-full max-w-md">
+        <h2 className="font-medium mb-2">LIFF 狀態診斷</h2>
+        <div className="text-sm space-y-1">
+          <p>Initializing: <span className={isInitializing ? "text-yellow-500 font-medium" : "text-green-500"}>{isInitializing ? "true" : "false"}</span></p>
+          <p>Ready: <span className={isReady ? "text-green-500 font-medium" : "text-red-500"}>{isReady ? "true" : "false"}</span></p>
+          <p>LoggedIn: <span className={isLoggedIn ? "text-green-500 font-medium" : "text-gray-500"}>{isLoggedIn ? "true" : "false"}</span></p>
+          <p>LIFF ID: <span className="font-mono text-xs">{liffId || "未設定"}</span></p>
+        </div>
+        
+        <button 
+          onClick={() => window.location.reload()}
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 w-full"
+        >
+          重新整理頁面
+        </button>
+      </div>
     </div>
   );
 }
