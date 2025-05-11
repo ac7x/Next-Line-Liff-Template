@@ -1,8 +1,7 @@
 'use client';
 
-import { saveUserProfile } from '@/modules/liff/application/actions/liff-commands';
+import { saveUserProfile } from '@/modules/liff/application/actions/user-profile.actions';
 import { LiffProfile as LiffProfileValueObject } from '@/modules/liff/domain/valueObjects/liff-profile';
-import { ProfileServerDTO } from '@/modules/liff/infrastructure/dtos/liff-profile.dto';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import LiffClient from '../client';
 
