@@ -1,4 +1,4 @@
-import { LiffProfile as LiffProfileType } from '@/modules/liff/domain/valueObjects/LiffProfile';
+import { LiffProfile as LiffProfileType } from '@/modules/liff/domain/valueObjects/liff-profile';
 
 interface LiffProfileProps {
   profile: LiffProfileType;

@@ -1,5 +1,5 @@
-import { IUserRepository } from '@/modules/liff/domain/repositories/IUserRepository';
-import { LiffProfile } from '@/modules/liff/domain/valueObjects/LiffProfile';
+import { IUserRepository } from '@/modules/liff/domain/repositories/user-repository.interface';
+import { LiffProfile } from '@/modules/liff/domain/valueObjects/liff-profile';
 import { ILiffSdkService } from '@/modules/liff/infrastructure/services/interfaces/ILiffSdkService';
 import { LiffInitOptions } from '@/modules/liff/interfaces/client';
 

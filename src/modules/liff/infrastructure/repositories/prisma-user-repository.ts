@@ -1,5 +1,5 @@
 import { User } from '@/modules/liff/domain/entities/user';
-import { IUserRepository } from '@/modules/liff/domain/repositories/IUserRepository';
+import { IUserRepository } from '@/modules/liff/domain/repositories/user-repository.interface';
 import { UserMapper } from '@/modules/liff/infrastructure/mappers/UserMapper';
 import { prisma } from '@/modules/shared/infrastructure/persistence/prisma/client';
 

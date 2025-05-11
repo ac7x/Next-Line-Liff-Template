@@ -1,5 +1,5 @@
-import { User } from '@/modules/liff/domain/entities/User';
-import { LiffProfile } from '@/modules/liff/domain/valueObjects/LiffProfile';
+import { User } from '@/modules/liff/domain/entities/user';
+import { LiffProfile } from '@/modules/liff/domain/valueObjects/liff-profile';
 import { User as PrismaUser } from '@prisma/client';
 
 export class UserMapper {
