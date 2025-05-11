@@ -21,13 +21,8 @@ export function LiffProvider({ children }: LiffProviderProps) {
     try {
       const liffService = new LiffServiceImpl();
       const app = new LiffApplication(liffService);
-      app.initializeLiff().catch((error: unknown) => {
-        if (error instanceof Error) {
-          console.error('LIFF 初始化失敗:', error.message);
-        } else {
-          console.error('LIFF 初始化失敗: 未知錯誤');
-        }
-      });
+      // 移除自動初始化，讓 useLiff hook 負責初始化
+      // 這樣可以避免重複初始化並確保每個使用點都能設定自己的錯誤處理
       return app;
     } catch (error: unknown) {
       if (error instanceof Error) {
