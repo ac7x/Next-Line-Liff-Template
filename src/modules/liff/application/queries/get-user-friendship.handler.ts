@@ -1,16 +1,17 @@
 import { IUserRepository } from '@/modules/liff/domain/repositories/user-repository.interface';
-
-export interface FriendshipStatusDTO {
-  userId: string;
-  isFriend: boolean;
-}
+import { FriendshipStatusDTO } from '../dto/friendship-status.dto';
+import { GetUserFriendshipQuery } from './get-user-friendship.query';
 
 export class GetUserFriendshipHandler {
   constructor(private readonly userRepository: IUserRepository) {}
 
-  async handle(userId: string): Promise<FriendshipStatusDTO | null> {
+  async handle(query: GetUserFriendshipQuery): Promise<FriendshipStatusDTO | null> {
     try {
-      const user = await this.userRepository.findByUserId(userId);
+      if (!query.userId) {
+        return null;
+      }
+      
+      const user = await this.userRepository.findByUserId(query.userId);
       
       if (!user) {
         return null;
