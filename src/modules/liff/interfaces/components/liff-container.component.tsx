@@ -1,11 +1,11 @@
 'use client';
 
 import { useCallback, useEffect } from 'react';
-import { useLiff } from '../hooks/useLiff';
-import { LiffActions } from './LiffActions';
-import { LiffInfo } from './LiffInfo';
-import { LiffInitStatus } from './LiffInitStatus';
-import { LiffProfile } from './LiffProfile';
+import { useLiff } from '../hooks/liff.hook';
+import { LiffActions } from './liff-actions.component';
+import { LiffInfo } from './liff-info.component';
+import { LiffInitStatus } from './liff-init-status.component';
+import { LiffProfile } from './liff-profile.component';
 
 interface LiffContainerProps {
   showInitStatus?: boolean;

@@ -1,5 +1,5 @@
 import { useCallback, useState } from 'react';
-import { useLiffContext } from '../contexts/LiffContext';
+import { useLiffContext } from '../contexts/liff-context.provider';
 
 /**
  * 使用 LIFF 的 hook，封裝 LIFF 相關功能

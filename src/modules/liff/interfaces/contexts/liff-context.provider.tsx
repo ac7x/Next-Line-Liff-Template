@@ -97,7 +97,7 @@ export function LiffContextProvider({ children }: { children: ReactNode }) {
         return { success: false, message: 'Not logged in' };
       }
 
-      const profileDto: ProfileServerDTO = {
+      const profileDto = {
         userId: profile.userId,
         displayName: profile.displayName,
         pictureUrl: profile.pictureUrl,

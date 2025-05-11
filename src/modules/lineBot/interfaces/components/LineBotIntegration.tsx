@@ -1,6 +1,6 @@
 'use client';
 
-import { useLiff } from '@/modules/liff/interfaces/hooks/useLiff';
+import { useLiff } from '@/modules/liff/interfaces/hooks/liff.hook';
 import { useEffect, useState } from 'react';
 
 export function LineBotIntegration() {
