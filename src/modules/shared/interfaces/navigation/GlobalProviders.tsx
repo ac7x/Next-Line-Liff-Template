@@ -12,7 +12,10 @@ export function Providers({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <LiffContextProvider>
         {children}
-        <GlobalBottomNav />
+        {/* 置中下方導航 */}
+        <div className="flex justify-center w-full">
+          <GlobalBottomNav />
+        </div>
       </LiffContextProvider>
     </QueryClientProvider>
   );

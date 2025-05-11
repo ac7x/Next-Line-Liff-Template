@@ -37,7 +37,7 @@ export default function ProfilePage() {
         <h1 className="mb-4 text-3xl font-bold">請先登入</h1>
         <p className="mb-6 text-lg text-gray-600">登入以查看您的個人資料。</p>
         <button
-          onClick={() => login()} // Call the login function from the hook
+          onClick={() => login()} // 不帶 redirectUri，登入後不跳轉
           className="rounded bg-blue-500 px-6 py-2 text-white shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-300"
         >
           使用 LINE 登入
