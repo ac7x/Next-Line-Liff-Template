@@ -72,18 +72,46 @@ export function LiffContextProvider({ children }: { children: ReactNode }) {
 
   const refreshProfile = useCallback(async () => {
     if (isInitialized && isLiffLoggedIn) {
-      const profileData = await LiffClient.getProfile();
-      const friendshipData = await LiffClient.getFriendship();
-      setProfile(LiffProfileValueObject.fromLiffProfile(profileData));
-      setFriendship(friendshipData);
+      try {
+        console.log('正在獲取 LINE 用戶資料...');
+        const profileData = await LiffClient.getProfile();
+        console.log('成功獲取用戶資料:', profileData);
+        
+        const friendshipData = await LiffClient.getFriendship();
+        console.log('獲取好友關係狀態:', friendshipData);
+        
+        setProfile(LiffProfileValueObject.fromLiffProfile(profileData));
+        setFriendship(friendshipData);
+        
+        // 在獲取最新資料後立即保存到資料庫
+        const profileDto = {
+          userId: profileData.userId,
+          displayName: profileData.displayName,
+          pictureUrl: profileData.pictureUrl,
+          statusMessage: profileData.statusMessage,
+        };
+        
+        await saveUserProfile(profileDto);
+        console.log('用戶資料自動保存完成');
+      } catch (error) {
+        console.error('刷新用戶資料時發生錯誤:', error);
+      }
     }
   }, [isInitialized, isLiffLoggedIn]);
 
   const handleLogout = useCallback(async () => {
-    LiffClient.logout();
-    setIsLiffLoggedIn(false);
-    setProfile(LiffProfileValueObject.createDefault());
-    setFriendship({ friendFlag: false });
+    try {
+      console.log('用戶登出中...');
+      LiffClient.logout();
+      setIsLiffLoggedIn(false);
+      setProfile(LiffProfileValueObject.createDefault());
+      setFriendship({ friendFlag: false });
+      console.log('用戶已成功登出並清除資料');
+      
+      // 可以在這裡加入登出後的其他處理，例如資料清理或跳轉
+    } catch (error) {
+      console.error('登出過程中發生錯誤:', error);
+    }
   }, []);
 
   const handleOpenExternalWindow = useCallback(
@@ -94,8 +122,11 @@ export function LiffContextProvider({ children }: { children: ReactNode }) {
   const handlePersistUserData = useCallback(async () => {
     try {
       if (!isLiffLoggedIn || !profile.userId) {
+        console.warn('無法保存用戶資料: 用戶尚未登入或缺少用戶ID');
         return { success: false, message: 'Not logged in' };
       }
+      
+      console.log('準備保存用戶資料:', profile);
 
       const profileDto = {
         userId: profile.userId,
@@ -104,7 +135,15 @@ export function LiffContextProvider({ children }: { children: ReactNode }) {
         statusMessage: profile.statusMessage,
       };
 
-      return await saveUserProfile(profileDto);
+      const result = await saveUserProfile(profileDto);
+      
+      if (result.success) {
+        console.log('用戶資料保存成功:', result);
+      } else {
+        console.warn('用戶資料保存失敗:', result);
+      }
+      
+      return result;
     } catch (err) {
       console.error('Error saving user profile:', err);
       return { success: false };

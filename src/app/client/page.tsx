@@ -1,7 +1,9 @@
 'use client';
 
+import { useLiff } from '@/modules/liff/interfaces/hooks/liff.hook';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 
 const tabs = [
   { name: '首頁', href: '/client/home', icon: '🏠' },
@@ -11,12 +13,30 @@ const tabs = [
 
 export default function ClientPage() {
   const pathname = usePathname();
+  const { isInitialized, isLoggedIn, profile, login, refreshProfile, persistUserData } = useLiff();
+  
+  // 頁面加載時確認用戶資料
+  useEffect(() => {
+    if (isInitialized && isLoggedIn) {
+      refreshProfile().then(() => {
+        persistUserData().then(result => {
+          if (result.success) {
+            console.log('用戶資料已自動保存到資料庫');
+          }
+        });
+      });
+    }
+  }, [isInitialized, isLoggedIn, refreshProfile, persistUserData]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100 p-4">
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold mb-2">LINE LIFF App</h1>
-        <p className="text-gray-600">歡迎使用我們的 LINE 整合應用</p>
+        {isLoggedIn && profile.userId ? (
+          <p className="text-gray-600">歡迎回來，{profile.displayName}！</p>
+        ) : (
+          <p className="text-gray-600">歡迎使用我們的 LINE 整合應用</p>
+        )}
       </div>
 
       <nav className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
@@ -45,6 +65,15 @@ export default function ClientPage() {
           ))}
         </ul>
       </nav>
+      
+      {!isLoggedIn && (
+        <button
+          onClick={() => login()}
+          className="mt-6 rounded-lg bg-[#00B900] px-6 py-2 text-white hover:bg-[#00B900]/90 transition"
+        >
+          使用 LINE 登入
+        </button>
+      )}
       
       <p className="text-sm text-gray-500 mt-8">使用 Next.js 15 & LINE LIFF SDK</p>
     </div>

@@ -32,9 +32,12 @@ export function LiffContainer({
   // 使用 useEffect 處理初始化後的資料持久化
   useEffect(() => {
     if (liff.isInitialized && liff.isLoggedIn) {
+      // 使用者登入後立即保存資料到資料庫，確保用戶資訊最新
       liff.persistUserData().then((result) => {
         if (result.success) {
-          console.log('User data persisted successfully', result);
+          console.log('用戶資料成功保存至資料庫！', result);
+        } else {
+          console.warn('用戶資料保存失敗:', result?.message || '未知錯誤');
         }
       });
     }

@@ -30,11 +30,13 @@ export class SaveUserProfileHandler {
       let userAggregate: UserAggregate;
       
       if (existingUser) {
+        console.log('找到現有用戶，正在更新個人資料', command.userId);
         // 創建使用者聚合根
         userAggregate = this.domainService.createAggregateFromUser(existingUser);
         // 更新現有用戶的個人資料
         userAggregate = this.domainService.processProfileUpdate(userAggregate, profile);
       } else {
+        console.log('創建新用戶個人資料', command.userId);
         // 創建新用戶聚合根
         userAggregate = UserAggregate.createNew(command.userId, profile);
       }

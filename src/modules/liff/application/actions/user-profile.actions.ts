@@ -29,9 +29,19 @@ export async function getUserProfile(userId: string) {
  */
 export async function saveUserProfile(profileData: LiffProfileServerDTO) {
   try {
+    console.log('保存使用者資料:', profileData);
     const repository = new PrismaUserRepository();
     const domainService = new LiffDomainService();
     const handler = new SaveUserProfileHandler(repository, domainService);
+    
+    // 驗證所需的欄位
+    if (!profileData.userId || !profileData.displayName) {
+      console.error('缺少必要的用戶資料欄位');
+      return { 
+        success: false, 
+        message: '用戶 ID 和顯示名稱為必填' 
+      };
+    }
     
     const command: SaveUserProfileCommand = {
       userId: profileData.userId,
@@ -40,7 +50,9 @@ export async function saveUserProfile(profileData: LiffProfileServerDTO) {
       statusMessage: profileData.statusMessage
     };
     
-    return await handler.handle(command);
+    const result = await handler.handle(command);
+    console.log('使用者資料保存結果:', result);
+    return result;
   } catch (error) {
     console.error('Error in saveUserProfile:', error);
     return { 

@@ -20,6 +20,7 @@ export class UserMapper {
     displayName: string;
     pictureUrl: string | null;
     statusMessage: string | null;
+    isFriend: boolean;
   } {
     const profile = domainModel.profile;
 
@@ -28,6 +29,7 @@ export class UserMapper {
       displayName: profile.displayName,
       pictureUrl: profile.pictureUrl || null,
       statusMessage: profile.statusMessage || null,
+      isFriend: domainModel.isFriend,
     };
   }
 }
