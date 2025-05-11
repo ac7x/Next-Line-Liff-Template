@@ -1,4 +1,4 @@
-import { LiffProfile } from '../valueObjects/LiffProfile';
+import { LiffProfile } from '../valueObjects/liff-profile';
 
 export class User {
   private readonly _userId: string;

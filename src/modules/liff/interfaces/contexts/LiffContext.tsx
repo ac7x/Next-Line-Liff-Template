@@ -2,7 +2,7 @@
 
 import { saveUserProfile } from '@/modules/liff/application/actions/liffActions';
 import { LiffProfile as LiffProfileValueObject } from '@/modules/liff/domain/valueObjects/LiffProfile';
-import { ProfileServerDTO } from '@/modules/liff/infrastructure/dtos/LiffProfileDto';
+import { ProfileServerDTO } from '@/modules/liff/infrastructure/dtos/liff-profile.dto';
 import { createContext, ReactNode, useCallback, useContext, useEffect, useState } from 'react';
 import LiffClient from '../client';
 

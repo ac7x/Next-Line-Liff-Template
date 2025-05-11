@@ -2,8 +2,8 @@
 
 import { User } from '@/modules/liff/domain/entities/User';
 import { LiffProfile } from '@/modules/liff/domain/valueObjects/LiffProfile';
-import { ProfileServerDTO } from '@/modules/liff/infrastructure/dtos/LiffProfileDto';
-import { PrismaUserRepository } from '@/modules/liff/infrastructure/repositories/PrismaUserRepository';
+import { ProfileServerDTO } from '@/modules/liff/infrastructure/dtos/liff-profile.dto';
+import { PrismaUserRepository } from '@/modules/liff/infrastructure/repositories/prisma-user-repository';
 
 function handleError(error: unknown): { success: false; message: string } {
   console.error('Error:', error);
