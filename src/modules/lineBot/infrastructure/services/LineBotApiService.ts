@@ -1,4 +1,4 @@
-import { ILineBotMessageSender } from '@/domain/lineBot/interfaces/ILineBotMessageSender';
+import { ILineBotMessageSender } from '@/modules/lineBot/domain/interfaces/ILineBotMessageSender';
 import { MessageObject } from '@/modules/lineBot/domain/types/LineTypes';
 import axios from 'axios';
 

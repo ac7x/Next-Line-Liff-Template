@@ -1,4 +1,4 @@
-import { ILineBotMessageSender } from '@/domain/lineBot/interfaces/ILineBotMessageSender';
+import { ILineBotMessageSender } from '@/modules/lineBot/domain/interfaces/ILineBotMessageSender';
 import { BotVerificationService } from '@/modules/lineBot/domain/services/BotVerificationService';
 import { LineBotService } from '@/modules/lineBot/domain/services/LineBotService';
 import { WebhookEvent } from '@line/bot-sdk';
