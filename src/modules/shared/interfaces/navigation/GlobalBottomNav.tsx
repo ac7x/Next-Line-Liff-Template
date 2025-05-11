@@ -48,19 +48,19 @@ export function GlobalBottomNav({ items = defaultNavItems }: GlobalBottomNavProp
 const defaultNavItems: NavItem[] = [
   {
     href: '/client/home',
-    icon: '🏠',
+    icon: '🛫',
     label: '首頁',
     active: false
   },
   {
     href: '/client/dashboard',
-    icon: '📊',
-    label: '儀表板',
+    icon: '🗺️',
+    label: '探索',
     active: false
   },
   {
     href: '/client/profile',
-    icon: '👤',
+    icon: '🧳',
     label: '我的',
     active: false
   }
