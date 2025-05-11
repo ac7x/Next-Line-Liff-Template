@@ -1,6 +1,6 @@
 'use client'; // Make this a Client Component
 
-import { useLiff } from '@/interfaces/liff/liff.hooks'; // Import the hook
+import { useLiff } from '@/modules/liff/interfaces/liff.hooks'; // Import the hook
 import Image from 'next/image'; // Import Image for profile picture
 
 // Get LIFF ID from environment variables (ensure it's available client-side)

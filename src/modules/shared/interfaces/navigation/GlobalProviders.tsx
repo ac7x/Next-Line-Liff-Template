@@ -1,6 +1,6 @@
 'use client'; // Providers managing client-side state often need to be client components
 
-import { LiffProvider } from '@/interfaces/liff/providers/LiffProvider';
+import { LiffProvider } from '@/modules/liff/interfaces/providers/LiffProvider';
 import { ReactNode } from 'react';
 // import { AnotherProvider } from '@/interfaces/another/providers/AnotherProvider'; // Example for future providers
 

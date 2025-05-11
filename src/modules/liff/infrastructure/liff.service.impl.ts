@@ -1,34 +1,34 @@
-import { ILiffService } from '@/domain/liff/liff.service';
-import { LiffAccessToken } from '@/domain/liff/valueObjects/liff-access-token.value';
-import { LiffApiAvailability } from '@/domain/liff/valueObjects/liff-api-availability.value';
-import { LiffAppLanguage } from '@/domain/liff/valueObjects/liff-app-language.value';
-import { LiffContext } from '@/domain/liff/valueObjects/liff-context.value';
-import { LiffDecodedIdToken } from '@/domain/liff/valueObjects/liff-decoded-id-token.value';
-import { LiffDeviceState } from '@/domain/liff/valueObjects/liff-device-state.value';
-import { LiffExternalWindow } from '@/domain/liff/valueObjects/liff-external-window.value';
-import { LiffFriendship } from '@/domain/liff/valueObjects/liff-friendship.value'; // Added
-import { LiffI18n } from '@/domain/liff/valueObjects/liff-i18n.value';
-import { LiffIdToken } from '@/domain/liff/valueObjects/liff-id-token.value';
-import { LiffId } from '@/domain/liff/valueObjects/liff-id.value';
-import { LiffInitConfig } from '@/domain/liff/valueObjects/liff-init-config.value';
-import { LiffLanguage } from '@/domain/liff/valueObjects/liff-language.value';
-import { LiffLineVersion } from '@/domain/liff/valueObjects/liff-line-version.value';
-import { LiffLocation } from '@/domain/liff/valueObjects/liff-location.value';
-import { LiffMessage } from '@/domain/liff/valueObjects/liff-message.value';
-import { LiffOs } from '@/domain/liff/valueObjects/liff-os.value';
-import { LiffPermanentLink } from '@/domain/liff/valueObjects/liff-permanent-link.value';
-import { LiffPermissionStatus } from '@/domain/liff/valueObjects/liff-permission-status.value'; // Added
-import { LiffPermission } from '@/domain/liff/valueObjects/liff-permission.value';
-import { LiffProfile } from '@/domain/liff/valueObjects/liff-profile.value';
-import { LiffScanCode } from '@/domain/liff/valueObjects/liff-scan-code.value';
-import { LiffShareTargetPicker } from '@/domain/liff/valueObjects/liff-share-target-picker.value';
-import { LiffUniversalLink } from '@/domain/liff/valueObjects/liff-universal-link.value';
-import { LiffUse } from '@/domain/liff/valueObjects/liff-use.value';
-import { LiffVersion } from '@/domain/liff/valueObjects/liff-version.value';
+import { ILiffService } from '@/modules/liff/domain/liff.service';
+import { LiffAccessToken } from '@/modules/liff/domain/valueObjects/liff-access-token.value';
+import { LiffApiAvailability } from '@/modules/liff/domain/valueObjects/liff-api-availability.value';
+import { LiffAppLanguage } from '@/modules/liff/domain/valueObjects/liff-app-language.value';
+import { LiffContext } from '@/modules/liff/domain/valueObjects/liff-context.value';
+import { LiffDecodedIdToken } from '@/modules/liff/domain/valueObjects/liff-decoded-id-token.value';
+import { LiffDeviceState } from '@/modules/liff/domain/valueObjects/liff-device-state.value';
+import { LiffExternalWindow } from '@/modules/liff/domain/valueObjects/liff-external-window.value';
+import { LiffFriendship } from '@/modules/liff/domain/valueObjects/liff-friendship.value'; // Added
+import { LiffI18n } from '@/modules/liff/domain/valueObjects/liff-i18n.value';
+import { LiffIdToken } from '@/modules/liff/domain/valueObjects/liff-id-token.value';
+import { LiffId } from '@/modules/liff/domain/valueObjects/liff-id.value';
+import { LiffInitConfig } from '@/modules/liff/domain/valueObjects/liff-init-config.value';
+import { LiffLanguage } from '@/modules/liff/domain/valueObjects/liff-language.value';
+import { LiffLineVersion } from '@/modules/liff/domain/valueObjects/liff-line-version.value';
+import { LiffLocation } from '@/modules/liff/domain/valueObjects/liff-location.value';
+import { LiffMessage } from '@/modules/liff/domain/valueObjects/liff-message.value';
+import { LiffOs } from '@/modules/liff/domain/valueObjects/liff-os.value';
+import { LiffPermanentLink } from '@/modules/liff/domain/valueObjects/liff-permanent-link.value';
+import { LiffPermissionStatus } from '@/modules/liff/domain/valueObjects/liff-permission-status.value'; // Added
+import { LiffPermission } from '@/modules/liff/domain/valueObjects/liff-permission.value';
+import { LiffProfile } from '@/modules/liff/domain/valueObjects/liff-profile.value';
+import { LiffScanCode } from '@/modules/liff/domain/valueObjects/liff-scan-code.value';
+import { LiffShareTargetPicker } from '@/modules/liff/domain/valueObjects/liff-share-target-picker.value';
+import { LiffUniversalLink } from '@/modules/liff/domain/valueObjects/liff-universal-link.value';
+import { LiffUse } from '@/modules/liff/domain/valueObjects/liff-use.value';
+import { LiffVersion } from '@/modules/liff/domain/valueObjects/liff-version.value';
 import type { Liff, LiffPlugin } from '@line/liff'; // Import necessary types
 
 // Use the domain type for PermissionStatus
-type PermissionStatus = import('@/domain/liff/valueObjects/liff-permission-status.value').PermissionStatus;
+type PermissionStatus = import('@/modules/liff/domain/valueObjects/liff-permission-status.value').PermissionStatus;
 
 export class LiffServiceImpl implements ILiffService {
   private liffClient: Liff | undefined;

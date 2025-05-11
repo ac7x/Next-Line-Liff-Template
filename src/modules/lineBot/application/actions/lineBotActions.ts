@@ -1,6 +1,6 @@
 'use server';
 
-import { getLineBotApplicationService } from '@/infrastructure/lineBot/di/lineBotServiceProvider';
+import { getLineBotApplicationService } from '@/modules/lineBot/infrastructure/di/lineBotServiceProvider';
 
 /**
  * 處理來自 LINE 平台的 Webhook 請求。

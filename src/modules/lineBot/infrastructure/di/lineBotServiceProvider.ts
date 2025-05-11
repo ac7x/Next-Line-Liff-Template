@@ -1,7 +1,7 @@
-import { LineBotApplicationService } from '@/application/lineBot/services/LineBotApplicationService';
-import { LineBotService } from '@/domain/lineBot/services/LineBotService';
-import { BotVerificationService } from '@/domain/lineBot/services/BotVerificationService';
-import { LineBotApiService } from '@/infrastructure/lineBot/services/LineBotApiService';
+import { LineBotApplicationService } from '@/modules/lineBot/application/services/LineBotApplicationService';
+import { BotVerificationService } from '@/modules/lineBot/domain/services/BotVerificationService';
+import { LineBotService } from '@/modules/lineBot/domain/services/LineBotService';
+import { LineBotApiService } from '@/modules/lineBot/infrastructure/services/LineBotApiService';
 
 // 單例模式
 let applicationService: LineBotApplicationService | null = null;

@@ -1,7 +1,7 @@
 'use client';
 
-import { LiffApplication } from '@/application/liff/liff.application';
-import { LiffServiceImpl } from '@/infrastructure/liff/liff.service.impl';
+import { LiffApplication } from '@/modules/liff/application/liff.application';
+import { LiffServiceImpl } from '@/modules/liff/infrastructure/liff.service.impl';
 import { createContext, ReactNode, useContext, useMemo } from 'react';
 
 // 1. 建立 Context

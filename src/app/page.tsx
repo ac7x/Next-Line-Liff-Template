@@ -1,5 +1,5 @@
-import { getLiffConfig } from '@/infrastructure/liff/config/liff.config'; // Import the config function
-import { LineBotIntegration } from '@/interfaces/lineBot/components/LineBotIntegration';
+import { getLiffConfig } from '@/modules/liff/infrastructure/config/liff.config'; // Import the config function
+import { LineBotIntegration } from '@/modules/lineBot/interfaces//components/LineBotIntegration';
 
 export default function Home() {
   // Read environment variables via the config function

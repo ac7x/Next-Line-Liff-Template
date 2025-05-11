@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 // Remove direct import of LiffProvider
 // import { LiffProvider } from '@/interfaces/liff/providers/LiffProvider';
-import { GlobalProviders } from '@/interfaces/navigation/GlobalProviders'; // Import GlobalProviders
+import { GlobalProviders } from '@/modules/shared/interfaces/navigation/GlobalProviders'; // Import GlobalProviders
 
 export const metadata: Metadata = {
   title: 'Line LIFF Demo',

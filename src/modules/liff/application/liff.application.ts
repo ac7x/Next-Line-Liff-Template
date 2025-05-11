@@ -1,9 +1,7 @@
-import { ILiffService } from '@/domain/liff/liff.service';
-import { LiffExternalWindow } from '@/domain/liff/valueObjects/liff-external-window.value';
-import { LiffFriendship } from '@/domain/liff/valueObjects/liff-friendship.value';
-import { LiffInitConfig } from '@/domain/liff/valueObjects/liff-init-config.value';
-import { LiffProfile } from '@/domain/liff/valueObjects/liff-profile.value';
-import { getLiffConfig } from '@/infrastructure/liff/config/liff.config';
+import { LiffFriendship } from '@/modules/liff/domain/valueObjects/liff-friendship.value';
+import { LiffInitConfig } from '@/modules/liff/domain/valueObjects/liff-init-config.value';
+import { LiffProfile } from '@/modules/liff/domain/valueObjects/liff-profile.value';
+import { getLiffConfig } from '@/modules/liff/infrastructure/config/liff.config';
 
 export class LiffApplication {
   constructor(private readonly liffService: ILiffService) {}

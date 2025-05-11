@@ -16,11 +16,7 @@
     "typeRoots": ["./types", "./node_modules/@types"],
     "paths": {
       "@/app/*": ["./src/app/*"],
-      "@/domain/*": ["./src/domain/*"],
-      "@/application/*": ["./src/application/*"],
-      "@/infrastructure/*": ["./src/infrastructure/*"],
-      "@/interfaces/*": ["./src/interfaces/*"],
-      "@/context/*": ["./src/context/*"]
+      "@/modules/*": ["./src/modules/*"]
     },
     "plugins": [
       {

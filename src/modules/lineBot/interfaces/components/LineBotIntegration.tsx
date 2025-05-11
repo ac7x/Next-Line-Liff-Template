@@ -1,6 +1,6 @@
 'use client';
 
-import { useLiff } from '@/interfaces/liff/hooks/liff.hooks'; // 更新 import 路徑
+import { useLiff } from '@/modules/liff/interfaces//hooks/liff.hooks'; // 更新 import 路徑
 import { useEffect, useState } from 'react';
 
 // Define props interface

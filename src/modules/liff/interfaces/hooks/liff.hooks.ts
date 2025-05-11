@@ -1,43 +1,25 @@
 'use client';
 
-import { LiffApplication } from '@/application/liff/liff.application';
-import { LiffFriendship } from '@/domain/liff/valueObjects/liff-friendship.value';
-import { LiffProfile } from '@/domain/liff/valueObjects/liff-profile.value';
-import { LiffServiceImpl } from '@/infrastructure/liff/liff.service.impl';
-import { useCallback, useEffect, useRef, useState } from 'react'; // Added useRef
+import { LiffFriendship } from '@/modules/liff/domain/valueObjects/liff-friendship.value';
+import { LiffProfile } from '@/modules/liff/domain/valueObjects/liff-profile.value';
+import { useCallback, useEffect, useState } from 'react';
+import { useLiffContext } from '../providers/LiffProvider'; // 引入新的 Context Hook
 
-// Instantiate outside or use context/DI for better management
-// Use useRef to ensure the instance persists across re-renders without causing re-initialization
-const useLiffApplication = () => {
-  const appRef = useRef<LiffApplication | null>(null);
-  if (!appRef.current) {
-    const liffService = new LiffServiceImpl();
-    appRef.current = new LiffApplication(liffService);
-  }
-  return appRef.current;
-};
-
+// 不再需要 useLiffApplication 輔助 Hook
 
 export function useLiff(liffId?: string) {
-  const liffApplication = useLiffApplication(); // Get persistent instance
+  // 從 Context 獲取 liffApplication 實例
+  const { liffApplication } = useLiffContext();
   const [isReady, setIsReady] = useState(false);
   const [error, setError] = useState<Error | null>(null);
-  const [profile, setProfile] = useState<LiffProfile | null>(null); // Ensure profile state exists
+  const [profile, setProfile] = useState<LiffProfile | null>(null);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [isInClient, setIsInClient] = useState<boolean>(false);
   const [friendship, setFriendship] = useState<LiffFriendship | null>(null);
-  const [isInitializing, setIsInitializing] = useState<boolean>(false); // Track initialization state
+  const [isInitializing, setIsInitializing] = useState<boolean>(false);
 
   // --- Initialization Effect ---
   useEffect(() => {
-    if (!liffId) {
-      console.warn('LIFF ID is missing.');
-      setError(new Error('LIFF ID is missing.'));
-      setIsReady(false);
-      setIsInitializing(false); // Not initializing if no ID
-      return;
-    }
-
     if (!liffApplication) {
       console.error('LiffApplication instance is not available from context.');
       setError(new Error('LIFF Application context is not available.'));
@@ -46,16 +28,15 @@ export function useLiff(liffId?: string) {
       return;
     }
 
-    // Prevent starting initialization if already in progress
     if (isInitializing) {
-        console.log('Initialization already in progress...');
-        return;
+      console.log('Initialization already in progress...');
+      return;
     }
 
     let isMounted = true;
-    setIsInitializing(true); // Mark as initializing
-    setError(null); // Clear previous errors
-    setIsReady(false); // Reset ready state
+    setIsInitializing(true);
+    setError(null);
+    setIsReady(false);
 
     console.log('Starting LIFF initialization...');
     liffApplication
@@ -63,34 +44,28 @@ export function useLiff(liffId?: string) {
       .then(() => {
         if (!isMounted) return;
         console.log('LIFF initialization successful.');
-        setIsReady(true); // Mark as ready
-        setError(null);
+        setIsReady(true);
       })
       .catch((initError) => {
         if (!isMounted) return;
         console.error('LIFF initialization failed:', initError);
-        setError(initError instanceof Error ? initError : new Error('LIFF initialization failed'));
-        setIsReady(false); // Ensure ready is false on error
+        setError(initError instanceof Error ? initError : new Error('Unknown initialization error'));
       })
       .finally(() => {
-         if (!isMounted) return;
-         setIsInitializing(false); // Mark initialization as complete (success or fail)
+        if (!isMounted) return;
+        setIsInitializing(false);
       });
 
     return () => {
       isMounted = false;
       console.log('useLiff cleanup: Unmounting or liffId changed.');
-      // Optional: Add cleanup logic if needed, though LIFF itself doesn't have a destroy method
     };
-    // Re-run ONLY if liffId changes. liffApplication instance is stable due to useRef.
-  }, [liffId, liffApplication, isInitializing]); // Add isInitializing to dependencies
+  }, [liffApplication, isInitializing]);
 
-
-  // --- Status Check Effect (Runs after initialization completes) ---
+  // --- Status Check Effect ---
   useEffect(() => {
-    // Only run if LIFF is ready and initialization isn't currently running
-    if (!isReady || isInitializing) {
-      console.log(`Status check skipped (Ready: ${isReady}, Initializing: ${isInitializing})`);
+    if (!isReady || isInitializing || !liffApplication) { // 增加 liffApplication 檢查
+      console.log(`Status check skipped (Ready: ${isReady}, Initializing: ${isInitializing}, App Available: ${!!liffApplication})`);
       return;
     }
 
@@ -99,6 +74,7 @@ export function useLiff(liffId?: string) {
 
     const checkStatus = async () => {
       try {
+        // 使用從 Context 來的 liffApplication
         const loggedIn = await liffApplication.checkLoginStatus();
         if (!isMounted) return;
         setIsLoggedIn(loggedIn);
@@ -109,7 +85,6 @@ export function useLiff(liffId?: string) {
         setIsInClient(inClient);
         console.log('Is In Client:', inClient);
 
-        // Clear profile/friendship if not logged in
         if (!loggedIn) {
             setProfile(null);
             setFriendship(null);
@@ -119,7 +94,6 @@ export function useLiff(liffId?: string) {
         if (!isMounted) return;
         console.error('Failed to check LIFF status:', statusError);
         setError(statusError instanceof Error ? statusError : new Error('Failed to check LIFF status'));
-        // Reset states on error?
         setIsLoggedIn(false);
         setIsInClient(false);
         setProfile(null);
@@ -132,16 +106,14 @@ export function useLiff(liffId?: string) {
     return () => {
         isMounted = false;
     }
-  // Depend on isReady and isInitializing to trigger after init completes
+  // 依賴 isReady, isInitializing 和 liffApplication
   }, [isReady, isInitializing, liffApplication]);
 
 
-  // --- Data Fetching Effect (Runs after login status is confirmed) ---
+  // --- Data Fetching Effect ---
   useEffect(() => {
-    // Only run if LIFF is ready, user is logged in, and not currently initializing
-    if (!isReady || !isLoggedIn || isInitializing) {
-       console.log(`Data fetch skipped (Ready: ${isReady}, LoggedIn: ${isLoggedIn}, Initializing: ${isInitializing})`);
-       // Clear data if logged out while ready
+    if (!isReady || !isLoggedIn || isInitializing || !liffApplication) { // 增加 liffApplication 檢查
+       console.log(`Data fetch skipped (Ready: ${isReady}, LoggedIn: ${isLoggedIn}, Initializing: ${isInitializing}, App Available: ${!!liffApplication})`);
        if (isReady && !isLoggedIn) {
            setProfile(null);
            setFriendship(null);
@@ -155,7 +127,8 @@ export function useLiff(liffId?: string) {
     const fetchData = async () => {
         // Fetch profile
         try {
-          const userProfile = await liffApplication.getUserProfile(); // getUserProfile handles login check internally now
+          // 使用從 Context 來的 liffApplication
+          const userProfile = await liffApplication.getUserProfile();
           if (!isMounted) return;
           setProfile(userProfile);
           console.log('Profile fetched:', userProfile);
@@ -163,12 +136,12 @@ export function useLiff(liffId?: string) {
            if (!isMounted) return;
            console.error('Failed to get profile:', profileError);
            setError(profileError instanceof Error ? profileError : new Error('Failed to get profile'));
-           // Optional: Logout or clear profile on error?
            setProfile(null);
         }
 
         // Fetch friendship status
         try {
+          // 使用從 Context 來的 liffApplication
           const friendStatus = await liffApplication.checkFriendship();
           if (!isMounted) return;
           setFriendship(friendStatus);
@@ -176,8 +149,7 @@ export function useLiff(liffId?: string) {
         } catch (friendshipError) {
            if (!isMounted) return;
            console.error('Failed to get friendship status:', friendshipError);
-           // Don't necessarily set main error state for this, maybe just log
-           setFriendship(null); // Indicate failure to get status
+           setFriendship(null);
         }
     };
 
@@ -186,37 +158,39 @@ export function useLiff(liffId?: string) {
     return () => {
         isMounted = false;
     }
-  // Depend on isReady, isLoggedIn, and isInitializing
+  // 依賴 isReady, isLoggedIn, isInitializing 和 liffApplication
   }, [isReady, isLoggedIn, isInitializing, liffApplication]);
 
 
   // --- Action Callbacks ---
 
   const login = useCallback(async () => {
-    // Allow login attempt even if not fully ready, LIFF SDK might handle it.
-    // Or add readiness check: if (!isReady) { console.warn(...); return; }
+    // Added isReady check here for extra safety, although LiffServiceImpl now also checks
+    if (!liffApplication || !isReady) {
+        const reason = !liffApplication ? 'LiffApplication instance is not available.' : 'LIFF is not ready.';
+        console.error(`Cannot login: ${reason}`);
+        setError(new Error(`Cannot login: ${reason}`));
+        return;
+    }
     console.log('Attempting login...');
     try {
-      // Let the application layer handle the logic
       await liffApplication.handleLogin();
-      // LIFF handles the redirect. State updates will happen naturally
-      // upon return and re-initialization/status checks.
       console.log('Login initiated (expecting redirect or state change).');
     } catch (loginError) {
       console.error('LIFF login failed:', loginError);
       setError(loginError instanceof Error ? loginError : new Error('LIFF login failed'));
     }
-  }, [liffApplication]); // Depends only on the stable application instance
+  }, [liffApplication, isReady]); // Added isReady dependency
 
   const logout = useCallback(async () => {
-    if (!isReady || !isLoggedIn) {
-      console.warn('LIFF not ready or not logged in, cannot logout.');
+    if (!isReady || !isLoggedIn || !liffApplication) { // 增加 liffApplication 檢查
+      console.warn(`Cannot logout (Ready: ${isReady}, LoggedIn: ${isLoggedIn}, App Available: ${!!liffApplication})`);
       return;
     }
     console.log('Attempting logout...');
     try {
+      // 使用從 Context 來的 liffApplication
       await liffApplication.handleLogout();
-      // Manually update state immediately after successful logout call
       setIsLoggedIn(false);
       setProfile(null);
       setFriendship(null);
@@ -225,51 +199,53 @@ export function useLiff(liffId?: string) {
       console.error('LIFF logout failed:', logoutError);
       setError(logoutError instanceof Error ? logoutError : new Error('LIFF logout failed'));
     }
-  }, [isReady, isLoggedIn, liffApplication]); // Depends on changing state and stable instance
+  }, [isReady, isLoggedIn, liffApplication]); // 依賴 isReady, isLoggedIn, liffApplication
 
   const getProfile = useCallback(async (): Promise<LiffProfile | null> => {
-     if (!isReady || !isLoggedIn) {
-       console.warn('LIFF not ready or not logged in, cannot get profile.');
+     if (!isReady || !isLoggedIn || !liffApplication) { // 增加 liffApplication 檢查
+       console.warn(`Cannot get profile (Ready: ${isReady}, LoggedIn: ${isLoggedIn}, App Available: ${!!liffApplication})`);
        return null;
      }
-     // Return cached profile first if available and matches current state
      if (profile) {
          console.log('Returning cached profile.');
          return profile;
      }
 
-     // If no cache, fetch fresh data
      console.log('Fetching fresh profile...');
      try {
+       // 使用從 Context 來的 liffApplication
        const userProfile = await liffApplication.getUserProfile();
-       // Update state cache only if component is still mounted (though less critical in useCallback)
-       setProfile(userProfile); // Update state cache
+       setProfile(userProfile);
        return userProfile;
      } catch (profileError) {
        console.error('Failed to get profile:', profileError);
        setError(profileError instanceof Error ? profileError : new Error('Failed to get profile'));
        return null;
      }
-   }, [isReady, isLoggedIn, profile, liffApplication]); // Depends on changing state and stable instance
+   }, [isReady, isLoggedIn, profile, liffApplication]); // 依賴 isReady, isLoggedIn, profile, liffApplication
 
 
   const openWindow = useCallback((url: string, external: boolean = true) => {
-     // Allow opening window even if not fully ready? LIFF SDK might handle.
-     // Or add readiness check: if (!isReady) { console.warn(...); return; }
+     // Added isReady check
+     if (!liffApplication || !isReady) {
+        const reason = !liffApplication ? 'LiffApplication instance is not available.' : 'LIFF is not ready.';
+        console.error(`Cannot open window: ${reason}`);
+        setError(new Error(`Cannot open window: ${reason}`));
+        return;
+     }
      console.log(`Opening window: ${url} (External: ${external})`);
      try {
         liffApplication.openExternalWindow(url, external);
      } catch(e) {
-        // Catch potential error from service impl if instance not ready
         console.error("Failed to open window:", e);
         setError(e instanceof Error ? e : new Error('Failed to open window'));
      }
-   }, [liffApplication]); // Depends only on stable instance
+   }, [liffApplication, isReady]); // Added isReady dependency
 
   return {
     isReady,
     error,
-    profile, // Ensure profile is returned
+    profile,
     isLoggedIn,
     isInClient,
     friendship,
@@ -277,7 +253,6 @@ export function useLiff(liffId?: string) {
     logout,
     getProfile,
     openWindow,
-    // Expose initialization status if needed for UI feedback
     isInitializing,
   };
 }

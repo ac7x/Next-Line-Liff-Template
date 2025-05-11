@@ -1,5 +1,5 @@
 import { ILineBotMessageSender } from '@/domain/lineBot/interfaces/ILineBotMessageSender';
-import { MessageObject } from '@/domain/lineBot/types/LineTypes';
+import { MessageObject } from '@/modules/lineBot/domain/types/LineTypes';
 import axios from 'axios';
 
 export class LineBotApiService implements ILineBotMessageSender {

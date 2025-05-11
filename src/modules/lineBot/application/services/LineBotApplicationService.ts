@@ -1,6 +1,6 @@
 import { ILineBotMessageSender } from '@/domain/lineBot/interfaces/ILineBotMessageSender';
-import { BotVerificationService } from '@/domain/lineBot/services/BotVerificationService';
-import { LineBotService } from '@/domain/lineBot/services/LineBotService';
+import { BotVerificationService } from '@/modules/lineBot/domain/services/BotVerificationService';
+import { LineBotService } from '@/modules/lineBot/domain/services/LineBotService';
 import { WebhookEvent } from '@line/bot-sdk';
 
 export class LineBotApplicationService {
