@@ -63,11 +63,5 @@ const defaultNavItems: NavItem[] = [
     icon: '👤',
     label: '我的',
     active: false
-  },
-  {
-    href: '/client/settings',
-    icon: '⚙️',
-    label: '設定',
-    active: false
   }
 ];
