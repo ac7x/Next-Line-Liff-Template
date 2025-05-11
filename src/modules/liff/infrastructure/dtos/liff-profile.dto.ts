@@ -1,12 +1,10 @@
-import { LiffProfile as LiffSdkProfile } from '@/modules/liff/interfaces/client';
+// 這個檔案已被棄用，請使用 application/dto/liff-profile.dto.ts
+// 為保持向後兼容，重新導出應用層的類型定義
+import type {
+  LiffProfileResponseDTO,
+  ProfileProps,
+  LiffProfileServerDTO as ProfileServerDTO
+} from '@/modules/liff/application/dto/liff-profile.dto';
 
-// 重用 client 中的型別定義，避免重複定義
-export type ProfileProps = LiffSdkProfile;
+export type { LiffProfileResponseDTO, ProfileProps, ProfileServerDTO };
 
-// 用於 Server Actions 的型別，因為無法直接在服務器使用 LIFF SDK
-export type ProfileServerDTO = {
-  userId: string;
-  displayName: string;
-  pictureUrl?: string;
-  statusMessage?: string;
-};

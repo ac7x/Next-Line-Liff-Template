@@ -1,4 +1,8 @@
+import { LiffProfile as LiffSdkProfile } from '@/modules/liff/interfaces/client';
 import { z } from 'zod';
+
+// 重用 client 中的型別定義，避免重複定義
+export type ProfileProps = LiffSdkProfile;
 
 // 定義用於 API 響應的 DTO
 export const LiffProfileResponseDTOSchema = z.object({

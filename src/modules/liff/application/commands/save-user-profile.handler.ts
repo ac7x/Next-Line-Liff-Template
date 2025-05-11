@@ -1,4 +1,4 @@
-import { User } from '@/modules/liff/domain/entities/user';
+import { UserAggregate } from '@/modules/liff/domain/aggregates/user-aggregate';
 import { IUserRepository } from '@/modules/liff/domain/repositories/user-repository.interface';
 import { LiffDomainService } from '@/modules/liff/domain/services/liff-domain-service';
 import { LiffProfile } from '@/modules/liff/domain/valueObjects/liff-profile';
@@ -27,18 +27,20 @@ export class SaveUserProfileHandler {
       // 查詢現有用戶
       const existingUser = await this.userRepository.findByUserId(command.userId);
       
-      let user: User;
+      let userAggregate: UserAggregate;
       
       if (existingUser) {
+        // 創建使用者聚合根
+        userAggregate = this.domainService.createAggregateFromUser(existingUser);
         // 更新現有用戶的個人資料
-        user = this.domainService.processProfileUpdate(existingUser, profile);
+        userAggregate = this.domainService.processProfileUpdate(userAggregate, profile);
       } else {
-        // 創建新用戶
-        user = new User(command.userId, profile, false);
+        // 創建新用戶聚合根
+        userAggregate = UserAggregate.createNew(command.userId, profile);
       }
       
       // 保存到儲存庫
-      const savedUser = await this.userRepository.save(user);
+      const savedUser = await this.userRepository.save(userAggregate.getRoot());
       
       return { 
         success: true,

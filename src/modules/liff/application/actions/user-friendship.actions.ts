@@ -16,12 +16,18 @@ export async function updateUserFriendship(userId: string, isFriend: boolean) {
       return { success: false, message: '找不到使用者' };
     }
     
-    const updatedUser = domainService.processFriendshipUpdate(existingUser, isFriend);
-    await repository.save(updatedUser);
+    // 創建使用者聚合根
+    const userAggregate = domainService.createAggregateFromUser(existingUser);
+    
+    // 更新好友關係
+    const updatedUserAggregate = domainService.processFriendshipUpdate(userAggregate, isFriend);
+    
+    // 保存更新後的使用者實體
+    await repository.save(updatedUserAggregate.getRoot());
     
     return { 
       success: true,
-      userId: updatedUser.userId
+      userId: updatedUserAggregate.getRoot().userId
     };
   } catch (error) {
     console.error('更新好友狀態時發生錯誤:', error);

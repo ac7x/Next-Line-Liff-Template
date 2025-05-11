@@ -51,27 +51,11 @@ export async function saveUserProfile(profileData: LiffProfileServerDTO) {
 }
 
 /**
- * 更新使用者好友狀態
+ * 更新使用者好友狀態 (這個方法已移至 user-friendship.actions.ts)
+ * @deprecated 請使用 @/modules/liff/application/actions/user-friendship.actions 中的函數
  */
 export async function updateUserFriendship(userId: string, isFriend: boolean) {
-  try {
-    const repository = new PrismaUserRepository();
-    const domainService = new LiffDomainService();
-    
-    const existingUser = await repository.findByUserId(userId);
-    if (!existingUser) {
-      return { success: false, message: 'User not found' };
-    }
-    
-    const updatedUser = domainService.processFriendshipUpdate(existingUser, isFriend);
-    await repository.save(updatedUser);
-    
-    return { success: true };
-  } catch (error) {
-    console.error('Error updating friendship status:', error);
-    return { 
-      success: false, 
-      message: error instanceof Error ? error.message : 'Unknown error' 
-    };
-  }
+  // 導向到正確的 action
+  const { updateUserFriendship } = await import('./user-friendship.actions');
+  return updateUserFriendship(userId, isFriend);
 }
