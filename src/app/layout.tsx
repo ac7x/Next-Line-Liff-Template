@@ -1,8 +1,6 @@
+import { Providers } from '@/modules/shared/interfaces/navigation/GlobalProviders';
 import type { Metadata } from 'next';
 import './globals.css';
-// Remove direct import of LiffProvider
-// import { LiffProvider } from '@/interfaces/liff/providers/LiffProvider';
-import { GlobalProviders } from '@/modules/shared/interfaces/navigation/GlobalProviders'; // Import GlobalProviders
 
 export const metadata: Metadata = {
   title: 'Line LIFF Demo',
@@ -11,14 +9,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="zh-TW">
       <body>
-        {/* Use GlobalProviders to wrap children */}
-        <GlobalProviders>
+        <Providers>
           {children}
-          {/* You might want to include layout elements like GlobalBottomNav here */}
-          {/* e.g., <GlobalBottomNav /> */}
-        </GlobalProviders>
+        </Providers>
       </body>
     </html>
   );

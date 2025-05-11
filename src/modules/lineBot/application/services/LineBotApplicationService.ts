@@ -8,7 +8,7 @@ export class LineBotApplicationService {
     private readonly lineBotService: LineBotService,
     private readonly messageSender: ILineBotMessageSender,
     private readonly verificationService: BotVerificationService
-  ) {}
+  ) { }
 
   async handleWebhook(body: string, signature: string): Promise<boolean> {
     // 驗證簽名

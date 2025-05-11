@@ -1,23 +1,19 @@
-'use client'; // Providers managing client-side state often need to be client components
+'use client';
 
-import { LiffProvider } from '@/modules/liff/interfaces/providers/LiffProvider';
+import { LiffContextProvider } from '@/modules/liff/interfaces/contexts/LiffContext';
+import { GlobalBottomNav } from '@/modules/shared/interfaces/navigation/GlobalBottomNav';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactNode } from 'react';
-// import { AnotherProvider } from '@/interfaces/another/providers/AnotherProvider'; // Example for future providers
 
-interface GlobalProvidersProps {
-  children: ReactNode;
-}
+const queryClient = new QueryClient();
 
-/**
- * Wraps the application with all necessary global context providers.
- */
-export function GlobalProviders({ children }: GlobalProvidersProps) {
+export function Providers({ children }: { children: ReactNode }) {
   return (
-    <LiffProvider>
-      {/* <AnotherProvider> */}
-        {/* Add other global providers here */}
+    <QueryClientProvider client={queryClient}>
+      <LiffContextProvider>
         {children}
-      {/* </AnotherProvider> */}
-    </LiffProvider>
+        <GlobalBottomNav />
+      </LiffContextProvider>
+    </QueryClientProvider>
   );
 }

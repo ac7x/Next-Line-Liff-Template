@@ -2,43 +2,72 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ReactNode } from 'react';
 
-const tabs = [
-  { name: '首頁', href: '/client/home', icon: '🏠' },
-  { name: '儀錶板', href: '/client/dashboard', icon: '🧸' },
-  { name: '我的', href: '/client/profile', icon: '👤' },
-];
+interface NavItem {
+  href: string;
+  icon: ReactNode;
+  label: string;
+  active: boolean;
+}
 
-/**
- * A global bottom navigation bar component.
- */
-export function GlobalBottomNav() {
+interface GlobalBottomNavProps {
+  items?: NavItem[];
+}
+
+export function GlobalBottomNav({ items = defaultNavItems }: GlobalBottomNavProps) {
   const pathname = usePathname();
 
-  return (
-    <nav className="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 shadow-lg">
-      <ul className="flex justify-around items-center h-16 px-2">
-        {tabs.map((tab) => {
-          const isActive = pathname.startsWith(tab.href);
-          return (
-            <li key={tab.href} className="flex-1">
-              <Link
-                href={tab.href}
-                className={`flex flex-col items-center justify-center h-full ${
-                  isActive ? 'text-blue-600' : 'text-gray-500 hover:text-gray-800'
-                }`}
-              >
-                <span className="text-xl">{tab.icon}</span>
-                <span className="text-xs mt-1">{tab.name}</span>
-                {isActive && <div className="absolute bottom-0 w-1/4 h-0.5 bg-blue-600 rounded-t-md" />}
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
-  );
+  // 預設 NavItem 如果沒有提供
+  const navItems = items.length > 0 ? items : defaultNavItems.map(item => ({
+    ...item,
+    active: pathname === item.href
+  }));
 
-// Note: You would typically import and place <GlobalBottomNav /> within your layout
-// (e.g., inside GlobalProviders in layout.tsx or a specific page layout)
-// Ensure your main content area has appropriate padding-bottom to avoid overlap.
+  return (
+    <div className="fixed bottom-0 left-0 z-50 w-full h-16 bg-white border-t border-gray-200">
+      <div className="grid h-full grid-cols-4 mx-auto">
+        {navItems.map((item, index) => (
+          <Link
+            key={index}
+            href={item.href}
+            className={`inline-flex flex-col items-center justify-center px-5 ${
+              item.active ? 'text-[#00B900]' : 'text-gray-500 hover:text-[#00B900]'
+            }`}
+          >
+            <div className="text-2xl">{item.icon}</div>
+            <span className="text-xs">{item.label}</span>
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// 預設導航項目
+const defaultNavItems: NavItem[] = [
+  {
+    href: '/client/home',
+    icon: '🏠',
+    label: '首頁',
+    active: false
+  },
+  {
+    href: '/client/dashboard',
+    icon: '📊',
+    label: '儀表板',
+    active: false
+  },
+  {
+    href: '/client/profile',
+    icon: '👤',
+    label: '我的',
+    active: false
+  },
+  {
+    href: '/client/settings',
+    icon: '⚙️',
+    label: '設定',
+    active: false
+  }
+];

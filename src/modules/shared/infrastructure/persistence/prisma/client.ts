@@ -28,4 +28,6 @@ if (process.env.NODE_ENV !== 'production') {
   global.prisma = prisma;
 }
 
-export default prisma;
+// 具名匯出，符合專案規範
+export { prisma };
+

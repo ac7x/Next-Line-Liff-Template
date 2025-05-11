@@ -1,33 +1,24 @@
-import { getLiffConfig } from '@/modules/liff/infrastructure/config/liff.config'; // Import the config function
-import { LineBotIntegration } from '@/modules/lineBot/interfaces//components/LineBotIntegration';
+'use client';
+
+import Link from 'next/link';
 
 export default function Home() {
-  // Read environment variables via the config function
-  const { liffId } = getLiffConfig();
-  const lineBotId = process.env.NEXT_PUBLIC_LINE_BOT_ID; // Keep reading bot ID directly for now, or create a similar config
-
-  // Basic check if the environment variables are set
-  if (!liffId) {
-    return (
-      <div className="container mx-auto p-4">
-        <div className="rounded bg-red-100 p-4 text-red-700 shadow">
-          發生錯誤：NEXT_PUBLIC_LIFF_ID 環境變數未設定。請檢查您的 .env.local 或環境設定。
-        </div>
-      </div>
-    );
-  }
-  // Optional: Check for lineBotId as well if it's critical for initial render
-  /*
-  if (!lineBotId) {
-    console.warn("NEXT_PUBLIC_LINE_BOT_ID is not set, 'Add Bot' button might not work correctly.");
-  }
-  */
-
   return (
-    <div className="container mx-auto p-4">
-      <div className="mt-6">
-        {/* Pass the environment variables as props */}
-        <LineBotIntegration liffId={liffId} lineBotId={lineBotId} />
+    <div className="container mx-auto p-4 pb-20">
+      <div className="mb-8 bg-[#00B900]/5 p-6 rounded-lg shadow-sm border border-[#00B900]/20">
+        <h1 className="text-2xl font-bold mb-6 text-[#00B900]">LINE 應用控制台</h1>
+        <div className="flex space-x-4">
+          <Link href="/admin">
+            <a className="px-4 py-2 bg-[#00B900] text-white rounded hover:bg-[#009900]">
+              管理員入口
+            </a>
+          </Link>
+          <Link href="/client">
+            <a className="px-4 py-2 bg-[#00B900] text-white rounded hover:bg-[#009900]">
+              客戶入口
+            </a>
+          </Link>
+        </div>
       </div>
     </div>
   );

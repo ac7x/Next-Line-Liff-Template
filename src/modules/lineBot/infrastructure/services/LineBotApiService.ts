@@ -9,7 +9,7 @@ export class LineBotApiService implements ILineBotMessageSender {
   constructor(
     private readonly channelAccessToken: string,
     private readonly channelSecret: string
-  ) {}
+  ) { }
 
   async sendReply(replyToken: string, message: MessageObject | MessageObject[]): Promise<void> {
     await axios.post(

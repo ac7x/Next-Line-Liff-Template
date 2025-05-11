@@ -1,123 +1,66 @@
 'use client';
 
-import { useLiff } from '@/modules/liff/interfaces//hooks/liff.hooks'; // 更新 import 路徑
+import { useLiff } from '@/modules/liff/interfaces/hooks/useLiff';
 import { useEffect, useState } from 'react';
 
-// Define props interface
-interface LineBotIntegrationProps {
-  liffId: string;
-  lineBotId?: string; // Make lineBotId optional if it's not always required
-}
-
-// Accept props
-export function LineBotIntegration({ liffId, lineBotId }: LineBotIntegrationProps) {
-  // Pass LIFF ID from props to the hook
-  // useLiff 現在會從 Context 獲取 liffApplication 實例
-  const { isReady, isLoggedIn, isInClient, friendship, openWindow, error, profile, isInitializing } = useLiff(liffId);
-  const [botStatus, setBotStatus] = useState<'connected' | 'disconnected' | 'checking' | 'error'>('checking');
+export function LineBotIntegration() {
+  const liff = useLiff();
+  const [botStatus, setBotStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
 
   useEffect(() => {
-    if (error) {
-      setBotStatus('error');
-      console.error("LIFF Hook Error:", error.message);
-      return;
-    }
-
-    if (isReady) {
-      if (isLoggedIn && friendship !== null) {
-        // Friendship status is available
-        setBotStatus(friendship.value ? 'connected' : 'disconnected');
-      } else if (isLoggedIn && friendship === null) {
-        // Logged in, but friendship status still loading or failed? Keep checking.
-        setBotStatus('checking');
-      } else {
-        // Not logged in or LIFF not ready
-        setBotStatus('disconnected'); // Or 'checking' if isReady is false?
+    const checkBotConnection = async () => {
+      if (liff.isInitialized && liff.isLoggedIn) {
+        try {
+          // 這裡可以實現檢查 Bot 連接狀態的邏輯
+          // 例如，檢查用戶是否已加入 Bot 為好友
+          const isFriend = liff.friendship.friendFlag;
+          setBotStatus(isFriend ? 'connected' : 'disconnected');
+        } catch (error) {
+          console.error('檢查 Bot 連接狀態時發生錯誤:', error);
+          setBotStatus('disconnected');
+        }
       }
-    } else {
-      // Still initializing
-      setBotStatus('checking');
-    }
-  }, [isReady, isLoggedIn, friendship, error]); // Depend on hook states
+    };
 
-  const handleAddBot = () => {
-    if (!lineBotId) {
-      console.error('LINE Bot ID is not configured or passed as prop.');
-      alert('無法添加 Bot，因為 Bot ID 未配置。'); // User feedback
-      return;
-    }
-    const botUrl = `https://line.me/R/ti/p/@${lineBotId}`;
-    if (isInClient) {
-      // Use the openWindow method from the hook
-      openWindow(botUrl, true); // Open externally in LINE app
-    } else {
-      // Standard browser behavior
-      window.open(botUrl, '_blank');
-    }
-  };
+    checkBotConnection();
+  }, [liff.isInitialized, liff.isLoggedIn, liff.friendship.friendFlag]);
 
-  // --- 範例：觸發後端動作，可能導致 Bot 發送訊息 ---
-  const handleExampleAction = async () => {
-    if (!profile?.value.userId) {
-      console.error("無法獲取 User ID");
-      return;
-    }
-    try {
-      // 假設有一個 Server Action `src/application/user/actions/userActions.ts`
-      // const result = await someUserAction(profile.value.userId, { data: 'example' });
-      // console.log("Server Action Result:", result);
-      // 如果 someUserAction 內部調用了 ILineBotMessageSender.sendPush
-      // 使用者將會在 LINE 聊天中收到來自 Bot 的訊息
-      alert("範例動作已觸發！後端可能會透過 Bot 發送訊息給您。");
-    } catch (actionError) {
-      console.error("執行範例動作失敗:", actionError);
-      alert("執行範例動作失敗。");
-    }
-  };
-  // --- 範例結束 ---
-
-  // Add a check at the top in case liffId prop is somehow empty (though page.tsx should prevent this)
-  if (!liffId) {
-     return <div className="rounded bg-red-100 p-4 text-red-700 shadow">錯誤：缺少 LIFF ID。</div>;
-  }
-
-  if (botStatus === 'error') {
-     return <div className="rounded bg-red-100 p-4 text-red-700 shadow">發生錯誤：{error?.message || '無法連接 LINE 服務'}</div>;
-  }
-
-  if (botStatus === 'checking' || isInitializing) { // 可以在檢查中加入 isInitializing 狀態
-    return <div className="p-4">檢查 LINE Bot 連接狀態中... (Initializing: {isInitializing.toString()}, Ready: {isReady.toString()}, LoggedIn: {isLoggedIn.toString()})</div>;
+  if (botStatus === 'checking') {
+    return <p className="text-[#00B900] mb-4">檢查 LINE Bot 連接狀態中...</p>;
   }
 
   if (botStatus === 'disconnected') {
     return (
-      <div className="rounded bg-yellow-100 p-4 shadow">
-        <h3 className="text-lg font-semibold">尚未連接 LINE Bot</h3>
-        <p className="my-2">請加入我們的官方帳號，以獲得完整功能體驗。</p>
+      <div className="mb-4 w-full rounded border border-[#00B900]/20 bg-[#00B900]/5 p-4">
+        <h3 className="font-medium text-[#00B900]">尚未連接 LINE Bot</h3>
+        <p className="my-2 text-gray-600">請加入我們的官方帳號，以獲得完整功能體驗。</p>
         <button
-          className="rounded bg-green-500 px-4 py-2 text-white hover:bg-green-600 disabled:opacity-50"
-          onClick={handleAddBot}
-          disabled={!isReady || !lineBotId} // Check prop lineBotId
+          className="rounded bg-[#00B900] px-4 py-2 text-white hover:bg-[#00B900]/90 transition-colors"
+          onClick={() => {
+            if (liff.isInClient) {
+              // 在 LINE 應用內打開 Bot 添加頁面
+              liff.openExternalWindow(
+                `https://line.me/R/ti/p/@${process.env.NEXT_PUBLIC_LINE_BOT_ID}`
+              );
+            } else {
+              // 在瀏覽器中打開 Bot 添加頁面
+              window.open(
+                `https://line.me/R/ti/p/@${process.env.NEXT_PUBLIC_LINE_BOT_ID}`,
+                '_blank'
+              );
+            }
+          }}
         >
-          {lineBotId ? '添加官方帳號' : 'Bot ID 未配置'}
+          添加官方帳號
         </button>
       </div>
     );
   }
 
-  // botStatus === 'connected'
   return (
-    <div className="rounded bg-green-100 p-4 shadow">
-      <h3 className="text-lg font-semibold">LINE Bot 已連接</h3>
-      <p className="my-2">您已成功連接我們的官方帳號，可以使用全部功能。</p>
-      {/* 加入範例按鈕 */}
-      <button
-        className="mt-2 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
-        onClick={handleExampleAction}
-        disabled={!isReady || !isLoggedIn || !profile}
-      >
-        觸發後端動作 (範例)
-      </button>
+    <div className="mb-4 w-full rounded border border-[#00B900]/20 bg-[#00B900]/5 p-4">
+      <h3 className="font-medium text-[#00B900]">LINE Bot 已連接</h3>
+      <p className="my-2 text-gray-600">您已成功連接我們的官方帳號，可以使用全部功能。</p>
     </div>
   );
 }
