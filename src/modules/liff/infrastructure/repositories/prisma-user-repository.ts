@@ -35,4 +35,24 @@ export class PrismaUserRepository implements IUserRepository {
 
     return this.mapper.toDomain(savedUser);
   }
+
+  async findByFriendshipStatus(isFriend: boolean): Promise<User[]> {
+    const users = await this.prisma.user.findMany({
+      where: { isFriend },
+    });
+
+    return users.map(user => this.mapper.toDomain(user));
+  }
+
+  async delete(userId: string): Promise<boolean> {
+    try {
+      await this.prisma.user.delete({
+        where: { userId },
+      });
+      return true;
+    } catch (error) {
+      console.error(`刪除使用者錯誤: ${error}`);
+      return false;
+    }
+  }
 }
